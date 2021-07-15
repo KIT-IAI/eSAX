@@ -1,0 +1,5 @@
+dtaidistance
+numpy
+matplotlib
+pandas
+plotnine
