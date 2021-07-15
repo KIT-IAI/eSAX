@@ -1,17 +1,20 @@
+"""
+MIT License
+Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
+"""
+
 import numpy as np
 import plots
 
-# Script to extract the "interesting" sequences
-# Original code: Nicole Ludwig 2021
 
-def minimum_search(data, event, window, custom_event=0.00, window_size=100):
+def determine_subsequences(data, event, window, custom_event=0.00, window_size=100):
     """
-    Function to find minima in the time series that could indicate process starts.
+    This method finds minima in the time series that could indicate where a motif starts
 
     :param window: custom window length in case 'event' equals 'none'
     :param data: the time series of interest
     :param event: (none, zero, minimum, custom) subsequences are either determined by a
-    minimum search or thorugh the points where they are zero or another
+    minimum search or through the points where they are zero or another
     specified value. If none is selected the subsequences are predefined by
     the window length
     :param custom_event: the customized value for the event start (default = 0.06)
@@ -19,7 +22,7 @@ def minimum_search(data, event, window, custom_event=0.00, window_size=100):
     :return:
     (dmin) list of nparrays containing the subsequences
     (localmin) list of startpoints     NOTE: The minima are not included in the subsequences
-                                                    (thats why the points in localmin are always n+1)
+                                                    (that's why the points in localmin are always n+1)
     """
     dmin = []
     localmin = []
@@ -110,12 +113,12 @@ def minimum_search(data, event, window, custom_event=0.00, window_size=100):
 
 def get_subsequences(data, measuring_interval):
     """
-    This method separates the time series in subsequences.
+    This method separates the time series into subsequences.
 
     ASSUME: All measurements must have a timestamp and there should be no NaN values in it.
 
-    :param measuring_interval: time difference between the measurements of the timeseries
-    :param data: the actual timeseries
+    :param measuring_interval: time difference between the measurements of the time series
+    :param data: the actual time series
     :return: The subsequences as a list of np arrays
     """
     # create the subsequences with the day or subday patterns
@@ -124,12 +127,12 @@ def get_subsequences(data, measuring_interval):
     window = round(24 * ((60 * 60) / measuring_interval))
 
     # get sequences and store the startpoints and sequences separately to not have lists of lists
-    sequences, _ = minimum_search(data=data, event="minimum", window=window)
+    sequences, _ = determine_subsequences(data=data, event="minimum", window=window)
 
     # Plot input (whole time-series) and output (sequences) data
     # NOTE: 'data' variable need unchanged!
-    plots.simple_plot(data, "CompleteTimeSeries.pdf")
-    plots.subsequences_plot(sequences, "All_Sequences.pdf")
+    plots.plot_time_series(data, "CompleteTimeSeries.pdf")
+    plots.plot_subsequences(sequences, "All_Sequences.pdf")
 
     print("Done")
 

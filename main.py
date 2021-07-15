@@ -1,3 +1,8 @@
+"""
+MIT License
+Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
+"""
+
 import os
 import sys
 
@@ -10,7 +15,7 @@ import get_subsequences as subs
 
 
 def load_data():
-    ## NOTE: Two examples for data loading
+    # NOTE: Two examples for data loading
     # UCI (building load data) dataset using 198 column
     path = os.path.join("data", "LD2011_2014_1.txt")
     df = pd.read_csv(
@@ -37,7 +42,7 @@ def main():
     # print(strftime("%Y-%m-%d %H:%M:%S"))
     data = load_data()
 
-    # Here the measurement intervals are calculated
+    # Calculate the measurement intervals
     # TODO find method to scale the window size right (atm: window = round(24 * ((60 * 60) / measuring_intervall))
     # NOTE: Find a way to pass time_dif_in_sec to module in pyWATTS (e.g. by user parameter)
     try:
@@ -59,7 +64,7 @@ def main():
     if ts_subs:
         found_motifs = mot.get_motif(data, ts_subs)
         if found_motifs:
-            plots.motif_plots(data, found_motifs)
+            plots.plot_motifs(data, found_motifs)
 
 
 if __name__ == "__main__":

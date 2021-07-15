@@ -1,11 +1,16 @@
+"""
+MIT License
+Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from plotnine import *
 
 
-def ecdf_plot(ecdf):
-    """ plotting the ecdf as a pdf image """
+def plot_ecdf(ecdf):
+    """ plotting the ECDF as a pdf image """
     plt.plot(ecdf[0], ecdf[1])
     plt.xlabel("Sample Quantiles")
     # Latex code for axis declarations
@@ -14,7 +19,7 @@ def ecdf_plot(ecdf):
     plt.savefig("ecdf_Power.pdf")
 
 
-def simple_plot(data, filepath, xlabel="Time", ylabel="Power"):
+def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
     # plot the complete time series
     plt.plot(data)
     plt.xlabel(xlabel)
@@ -24,7 +29,7 @@ def simple_plot(data, filepath, xlabel="Time", ylabel="Power"):
     plt.savefig(filepath)
 
 
-def subsequences_plot(sequences, filepath, xlabel="Time", ylabel="Power"):
+def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
     # create a data frame with one y variable (all sequences after each other)
     # and a x variable (time steps)
     # add the name of the sequence as third column
@@ -57,9 +62,9 @@ def subsequences_plot(sequences, filepath, xlabel="Time", ylabel="Power"):
     p.save(filepath, width=14, height=10)
 
 
-def motif_plots(data, found_motifs):
+def plot_motifs(data, found_motifs):
     """
-    This method is used to produce the result plots of the algorithm.
+    This method produces the result plots of eSAX.
     Subsequences with a similar course are grouped (motifs) and plotted into the same pdf file.
     :param data: the original time series
     :param found_motifs: the result list of get_motif(ts_subs)
@@ -108,4 +113,4 @@ def motif_plots(data, found_motifs):
             "Sequence") + theme(legend_position="none")
         p.save("eMotif_{}.pdf".format(m), width=14, height=10)
 
-    print("All motifs plottet ...")
+    print("All motifs plotted ...")
