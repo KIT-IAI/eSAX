@@ -45,7 +45,7 @@ As described by Nicole, "there are several parameters in this file which can cha
 | iter | min(max(length(subsequences)*0.1), w/10)  | number of iterations of the random projection algorithm (note: the motif candidate search depends on it together with count_ratio_1) |
 |mask_size|2|mask size for random projection|
 |max_dist_ratio|2.5|final distance allowed between occurrences in one motif|
-|count_ratio_1|2.5|controls when entries in the collision matrix become candidate motifs|
+|count_ratio_1|5|controls when entries in the collision matrix become candidate motifs|
 |count_ratio_2|1.5|controls whether a candidate motif becomes a motif|
 
 <code>plots.py:</code> Contains methods for plotting interim and final results.
