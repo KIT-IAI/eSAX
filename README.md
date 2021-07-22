@@ -63,4 +63,5 @@ Since this Python implementation of eSAX is based on the original R implemention
 * In the Python implmentation, the subsequence and the motif plots are plotted with a function from the package plotnine. This way, the plots implemented in R can be used in Python, so the plots look the same.
 
 <h2>License</h2>
-This code is licensed under the [MIT License](../LICENSE).
+
+This code is licensed under the [MIT License](LICENSE).
