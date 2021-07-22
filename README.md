@@ -7,7 +7,7 @@ Thereby, this implementation is based on the corresponding paper:
 
 <h2>Assumed structure of files</h2> 
 
-This implementation assumes the input time series to be in the data folder.
+This implementation assumes the input time series to be in the data folder. For calculating the window size the algorithm compares the first two timestamps. Therefore the time series is expected to have a timestamp column. If not, a default value of 60 seconds is used.
 
 <h2>Files</h2>
 
