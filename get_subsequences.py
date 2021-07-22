@@ -9,20 +9,24 @@ import plots
 
 def determine_subsequences(data, event, window, custom_event=0.00, window_size=100):
     """
-    This method finds minima in the time series that could indicate where a motif starts
+    This method finds minima in the time series that could indicate where a motif starts.
+    NOTE: The minima are not included in the subsequences (that's why the points in localmin are always n+1)
 
     :param window: custom window length in case 'event' equals 'none'
+    :type: int
     :param data: the time series of interest
+    :type: pandas.Series
     :param event: (none, zero, minimum, custom) subsequences are either determined by a
     minimum search or through the points where they are zero or another
     specified value. If none is selected the subsequences are predefined by
     the window length
+    :type: string
     :param custom_event: the customized value for the event start (default = 0.06)
+    :type: float
     :param window_size: indicates the window size for the minimum search
-    :return:
-    (dmin) list of nparrays containing the subsequences
-    (localmin) list of startpoints     NOTE: The minima are not included in the subsequences
-                                                    (that's why the points in localmin are always n+1)
+    :type: int
+
+    :return: a list of np.ndarrays containing the subsequences and list of startpoints
     """
     dmin = []
     localmin = []
@@ -114,12 +118,14 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
 def get_subsequences(data, measuring_interval):
     """
     This method separates the time series into subsequences.
-
     ASSUME: All measurements must have a timestamp and there should be no NaN values in it.
 
-    :param measuring_interval: time difference between the measurements of the time series
-    :param data: the actual time series
-    :return: The subsequences as a list of np arrays
+    :param measuring_interval: time difference in seconds between the measurements of the time series
+    :type: int
+    :param data: original time series of interest
+    :type: pandas.Series
+
+    :return: The subsequences as a list of np.ndarrays
     """
     # create the subsequences with the day or subday patterns
 

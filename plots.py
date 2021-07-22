@@ -10,7 +10,12 @@ from plotnine import *
 
 
 def plot_ecdf(ecdf):
-    """ plotting the ECDF as a pdf image """
+    """
+    Method for plotting the ECDF as a pdf image
+
+    :param ecdf: Euclidean Cumulative Distribution Function
+    :type: tuple (x,y) of np.ndarrays
+    """
     plt.plot(ecdf[0], ecdf[1])
     plt.xlabel("Sample Quantiles")
     # Latex code for axis declarations
@@ -20,6 +25,18 @@ def plot_ecdf(ecdf):
 
 
 def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
+    """
+    Method for plotting the original time series
+
+    :param data: the original time series
+    :type: pandas.Series
+    :param filepath: path to the file containing the data
+    :type: string
+    :param xlabel: label of the x-axis
+    :type: string
+    :param ylabel: label of the y-axis
+    :type: string
+    """
     # plot the complete time series
     plt.plot(data)
     plt.xlabel(xlabel)
@@ -30,6 +47,18 @@ def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
 
 
 def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
+    """
+    Method for plotting the subsequences time series
+
+    :param sequences: the subsequences of the subsequence detection step
+    :type: list of numpy.ndarrays
+    :param filepath: path to the file containing the data
+    :type: string
+    :param xlabel: label of the x-axis
+    :type: string
+    :param ylabel: label of the y-axis
+    :type: string
+    """
     # create a data frame with one y variable (all sequences after each other)
     # and a x variable (time steps)
     # add the name of the sequence as third column
@@ -66,9 +95,11 @@ def plot_motifs(data, found_motifs):
     """
     This method produces the result plots of eSAX.
     Subsequences with a similar course are grouped (motifs) and plotted into the same pdf file.
+
     :param data: the original time series
-    :param found_motifs: the result list of get_motif(ts_subs)
-    :return:
+    :type: pandas.Series
+    :param found_motifs: the result list of get_motif
+    :type: dict
     """
     motif_raw = found_motifs.get("motif_raw")
     dates = pd.arrays.DatetimeArray(

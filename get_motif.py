@@ -16,8 +16,9 @@ import string
 def get_ecdf(data):
     """
     This method provides the empirical cumulative distribution function (ECDF) of a time series.
+
     :param data: a numeric vector representing the univariate time series
-    :type data: dataframe
+    :type data: pandas.Series
     :return: ECDF function for the time series
     """
     # Drop all values = 0
@@ -33,7 +34,8 @@ def calculate_ecdf(data):
     statsmodels.distributions.empirical_distribution.ECDF does not calculate the same ECDF as stats::ecdf does.
 
     :param data: numeric vector representing the univariate time series
-    :return: (x,y) ECDF for the time series
+    :type: pandas.Series
+    :return: ECDF for the time series as tuple of np.ndarrays
     """
     x = np.sort(data)
     n = x.size
@@ -46,8 +48,12 @@ def create_esax(x, b, w):
     This method creates eSAX symbols for an univariate time series.
 
     :param x: numeric vector representing the univariate time series
+    :type: pandas.Series
     :param b: breakpoints used for the eSAX representation
+    :type: numpy.ndarray
     :param w: defines the word size used for the eSAX transformation
+    :type: int
+
     :return: eSAX representation of x
     """
     # Perform the piecewise aggregation
@@ -84,9 +90,10 @@ def create_esax(x, b, w):
 
 
 def create_esax_time_series(ts_subs, w, per):
-    """ TODO Docstring for all methods (e.g. this one :D)
+    """
     This method creates the eSAX representation for each subsequence
     and puts them rowwise into a dataframe.
+
     :param ts_subs: ts_subs a list of np arrays with the subsequences of the time-series
     :type ts_subs: list of np arrays
     :param w: word size used for the eSAX transformation
@@ -95,7 +102,6 @@ def create_esax_time_series(ts_subs, w, per):
     :type per: np.quantile
     :return: dataframe with the symbolic representations of the subsequences (rowwise)
             and the non-symbolic subsequences in pieces_all
-    :rtype: pd.Dataframe and list of ndarrays
     """
     # create eSAX time series
     print("Creating the eSAX pieces")
@@ -139,9 +145,11 @@ def perform_random_projection(ts_sax_df, num_iterations):
     Random columns of ts_sax_df are chosen (pairwise) and a collision matrix is generated
 
     :param ts_sax_df: dataframe with the symbolic representation of the subsequences (rowwise)
+    :type: pandas.Dataframe
     :param num_iterations: number of iterations for the random projection (the higher that number is, the
     approximate result gets closer to the "true" result
-    :return: the collision matrix
+    :type: int
+    :return: a collision matrix for identifying motif candidates
     """
     # Perform the random projection
     col_mat = np.zeros((ts_sax_df.shape[0], ts_sax_df.shape[0]))
@@ -177,13 +185,20 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
     """
     This method extracts the motif pairs with the highest number of collisions in the collision matrix.
     :param ts_sax_df: dataframe with the symbolic representation of the subsequences (rowwise)
+    :type: pandas.Dataframe
     :param col_mat: collision matrix
-    :param ts_subs: subsequences in a list of ndarrays
+    :type: pandas.Dataframe
+    :param ts_subs: subsequences from the subsequence detection
+    :type: list of ndarrays
     :param num_iterations: number of iterations for the random projection
+    :type: int
     :param count_ratio_1: first count ratio
+    :type: float
     :param count_ratio_2: second count ratio
+    :type: float
     :param max_dist_ratio: maximum distance ratio for determining if the euclidean distance between
                 two motif candidates is smaller than a threshold
+    :type: float
     :return: a list of ndarrays with the starting indices of the motifs in the original time-series
     """
     # Extract the tentative motif pair
@@ -205,7 +220,7 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
     motif_pair = pd.DataFrame(motif_pair)
     if motif_pair.shape == (0, 0):
         print("No motif candidates")
-        return False
+        return []
     counter = 0
 
     indices = []
@@ -260,10 +275,13 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
 def get_motif(data, ts_subs):
     """
     This method combines all previous steps to extract the motifs.
+
     :param data:
-    :param ts_subs: subsequences
+    :type: pandas.Series
+    :param ts_subs: subsequences from the subsequence detection
+    :type: list of numpy.ndarrays
     :return: dict with subsequences, sax dataframe, motifs (symbolic, non-symbolic), collision matrix,
-    indices, non-symbolic subsequences
+    indices where the motifs start, non-symbolic subsequences
     """
     print("Looking at 15 min data aggregation")
 

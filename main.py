@@ -15,8 +15,11 @@ import get_subsequences as subs
 
 
 def load_data():
-    # NOTE: Two examples for data loading
-    # UCI (building load data) dataset using 198 column
+    """
+    Loads data from the data folder.
+    NOTE: Two examples for data loading
+    UCI (building load data) dataset using 198 column
+    """
     path = os.path.join("data", "LD2011_2014_1.txt")
     df = pd.read_csv(
         path, index_col=0, parse_dates=True,
@@ -39,11 +42,9 @@ def load_data():
 
 
 def main():
-    # print(strftime("%Y-%m-%d %H:%M:%S"))
     data = load_data()
 
     # Calculate the measurement intervals
-    # TODO find method to scale the window size right (atm: window = round(24 * ((60 * 60) / measuring_intervall))
     # NOTE: Find a way to pass time_dif_in_sec to module in pyWATTS (e.g. by user parameter)
     try:
         dates = pd.arrays.DatetimeArray(data.index, dtype=np.dtype("<M8[ns]"), freq=None, copy=False)
@@ -54,7 +55,6 @@ def main():
         raise
 
     if time_dif_in_sec == 0:
-    # TODO find default that is making sense
         time_dif_in_sec = 60
 
     # Get subsequences
