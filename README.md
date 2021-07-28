@@ -5,14 +5,13 @@ Thereby, this implementation is based on the corresponding paper:
 
 >N. Ludwig, L. Barth, D. Wagner, and V. Hagenmeyer (2019). “Industrial Demand-Side Flexibility: A Benchmark Data Set”. In: Proceedings of the Ninth International Conference on Future Energy Systems - e-Energy ’19. The Association for Computing Machinery, pp. 460–473. doi: [10.1145/3307772.3331021](https://doi.org/10.1145/3307772.3331021)
 
-<h2>Assumed structure of files</h2> 
+<h2>Input requirements</h2> 
 
-This implementation assumes the input time series to be in the data folder. For calculating the window size the algorithm compares the first two timestamps. Therefore the time series is expected to have a timestamp column. If not, a default value of 60 seconds is used.
+This implementation assumes the input time series to be in the data folder. The input time series cannot contain NaN-values. Furthermore, the input data must have a timestamp in the first column (to be able to determine the window size by comparing the first two timestamps) and a variable of interest such as power in the second column. If no timestamp column exist, a default value of 60 seconds is used.
 
-<h2>Files</h2>
+<h2>Files and parameters</h2>
 
 <code>get_subsequences.py:</code> Extracts the subsequences from the original time series. The series is seperated into the subsequences depening on the method selected by the user.
-The input data must have a timestamp in the first column and a variable of interest such as power in the second column. Additionally, the time series cannot contain NaN-values.
 
 Available methods for subsequence detection:
 - "minimum": The minima in the time series define the start- and endpoints of the subsequences (Please note: The minimum itself is not part of the subsequence because the algorithm was originally designed for time series with zeros as minimum)
@@ -22,7 +21,7 @@ Available methods for subsequence detection:
 
 The method get_subsequences(data, measuring_interval) returns a list of numpy.ndarray where each contains one subsequence.
 
-<code>get_motif.py:</code> Extracts eSAX motifs from the identified subsequences. First, the Euclidean Cumulative Distribution Function (ECDF) of the time series is calculated to find the right percentiles for the allocation of the SAX letters.
+<code>get_motifs.py:</code> Extracts eSAX motifs from the identified subsequences. First, the Euclidean Cumulative Distribution Function (ECDF) of the time series is calculated to find the right percentiles for the allocation of the SAX letters.
 After the allocation of these letter to the subsequences, the resulting SAX representations of the subsequences are extracted with a random projection and a collision matrix is generated. The pairs of subsequences that have a high collision value are declared as motif candidates.
 To prepare the decision whether two candidates belong to the same motif, the Euclidean distance between the two subsequences has to be smaller than a threshold value. In case of two candidates with unequal length, dynamic time warping is used to warp these subsequences to equal length such that the Euclidean distance can be calculated. Finally, the indexes of the found motifs are checked for overlap to decide whether they belong to the same motif:
 For example, if the start indices of two motif pair are (12,150) and the start indices of another pair are (150,300), all three subsequences will belong to the same motif.
@@ -58,9 +57,9 @@ As described by Nicole, "there are several parameters in this file which can cha
 Since this Python implementation of eSAX is based on the original R implemention of eSAX, we want to enable an easy comparison of both that can be used to verify that both implementations work equally. For this purpose, we list aspects in the following that are required to consider when comparing both implementations.
 * The R implementation was designed for analysing multiple time series in one run. When comparing both implementations, the loop in the R implementation that loads multiple time series has to be removed.
 * In the R implementation, the algorithm can be executed step-by-step. For comparing the interim results between Python and R, the debugger function of the IDE is helpful.
-* The R implementation cannot handle subsequences with different lengths. Therefore, the R implementation extends the shorter sequence to the length of the longer sequence by repeating the shorter sequence in order to calculates the Euclidean distance between two sequences of different lengths.
-* The calculate_ecdf() method in get_motif.py is equal to stats::ecdf in R. The ecdf() function in statsmodels.distributions.empirical_distribution.ECDF does not calculate the same ecdf like stats::ecdf
-* In the Python implmentation, the subsequence and the motif plots are plotted with a function from the package plotnine. This way, the plots implemented in R can be used in Python, so the plots look the same.
+* The R implementation cannot handle subsequences with different lengths. In case of subsequences with different lengths, the R implementation thus extends the shorter sequence to the length of the longer sequence by repeating the shorter sequence in order to calculates the Euclidean distance between two sequences of different lengths.
+* The calculate_ecdf() method in get_motifs.py is equal to stats::ecdf in R. The ecdf() function in statsmodels.distributions.empirical_distribution.ECDF does not calculate the same ecdf like stats::ecdf
+* In the Python implmentation, the subsequence and the motif plots are plotted with a function from the package plotnine. This way, the plots implemented in R can be used in Python and the plots look the same.
 
 <h2>License</h2>
 

@@ -10,37 +10,35 @@ import plots
 def determine_subsequences(data, event, window, custom_event=0.00, window_size=100):
     """
     This method finds minima in the time series that could indicate where a motif starts.
-    NOTE: The minima are not included in the subsequences (that's why the points in localmin are always n+1)
+    NOTE: The minima are not included in the subsequences. Therefore, the points in localmin are always n+1.
 
     :param window: custom window length in case 'event' equals 'none'
     :type: int
     :param data: the time series of interest
     :type: pandas.Series
-    :param event: (none, zero, minimum, custom) subsequences are either determined by a
-    minimum search or through the points where they are zero or another
-    specified value. If none is selected the subsequences are predefined by
+    :param event: (none, zero, minimum, custom) subsequences are either determined by a minimum search or through the
+    points where they are zero or another specified value. If none is selected, the subsequences are predefined by
     the window length
     :type: string
     :param custom_event: the customized value for the event start (default = 0.06)
     :type: float
     :param window_size: indicates the window size for the minimum search
     :type: int
-
-    :return: a list of np.ndarrays containing the subsequences and list of startpoints
+    :return: a list of numpy.ndarrays containing the subsequences and list of start points
+    :rtype: TODO
     """
     dmin = []
     localmin = []
 
-    # the subsequences in dmin always start with the minimum
+    # The subsequences in dmin always start with the minimum
     if event == "minimum":
         print("Searching for minima ...\n")
-        # initialise __vector__ for minima
+        # Initialise __vector__ for minima
 
-        # Loop that finds all minima occuring in each run
+        # Loop that finds all minima occurring in each run
         w = window_size
 
-        # find the minima in the window (use the first one found if more than one)
-
+        # Find the minima in the window (use the first one found if more than one)
         for i in range(1, int(len(data) / w) + 1):
             k = i * w
             j = (i * w) - w
@@ -84,7 +82,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
         for i in range(0, len(start)):
             if data[start[i] + 1] != custom_event:
                 localmin.append(start[i] + 1)
-                # next point where it is custom again
+                # Next point where it is custom again
                 if i + 1 < len(start):
                     localmin.append(start[i + 1])
                 else:
@@ -98,7 +96,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
     elif event == "none":
         print("Preparing subsequences ...\n")
 
-        # store the subsequences of size window length for motif discovery in dmin
+        # Store the subsequences of size window length for motif discovery in dmin
 
         for i in range(0, round(len(data) / window)):
             if ((i + 1) * window) < len(data):
@@ -106,7 +104,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
             else:
                 dmin.append(data[(i * window):len(data)-1].to_numpy())
 
-        # save the startpoints(window length distance)
+        # Save the start points (window length distance)
         for i in range(0, len(dmin)):
             localmin.append(i * window)
 
@@ -118,21 +116,21 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
 def get_subsequences(data, measuring_interval):
     """
     This method separates the time series into subsequences.
-    ASSUME: All measurements must have a timestamp and there should be no NaN values in it.
+    ASSUME: All measurements must have a timestamp and no NaN values should be present.
 
     :param measuring_interval: time difference in seconds between the measurements of the time series
     :type: int
     :param data: original time series of interest
     :type: pandas.Series
-
     :return: The subsequences as a list of np.ndarrays
+    :rtype: TODO
     """
-    # create the subsequences with the day or subday patterns
+    # Create the subsequences with day or subday patterns
 
-    # calculate how many measuring intervalls fit in one day (in seconds)
+    # Calculate how many measuring intervals fit in one day (in seconds)
     window = round(24 * ((60 * 60) / measuring_interval))
 
-    # get sequences and store the startpoints and sequences separately to not have lists of lists
+    # Get sequences and store the start points and sequences separately to avoid lists of lists
     sequences, _ = determine_subsequences(data=data, event="minimum", window=window)
 
     # Plot input (whole time-series) and output (sequences) data

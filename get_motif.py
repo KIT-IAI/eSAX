@@ -19,7 +19,8 @@ def get_ecdf(data):
 
     :param data: a numeric vector representing the univariate time series
     :type data: pandas.Series
-    :return: ECDF function for the time series
+    :return: ECDF function of the time series
+    :rtype: TODO
     """
     # Drop all values = 0
     data = data[np.array(data, dtype=np.int64) != 0]
@@ -35,7 +36,8 @@ def calculate_ecdf(data):
 
     :param data: numeric vector representing the univariate time series
     :type: pandas.Series
-    :return: ECDF for the time series as tuple of np.ndarrays
+    :return: ECDF for the time series as tuple of numpy.ndarrays
+    :rtype: TODO
     """
     x = np.sort(data)
     n = x.size
@@ -45,16 +47,16 @@ def calculate_ecdf(data):
 
 def create_esax(x, b, w):
     """
-    This method creates eSAX symbols for an univariate time series.
+    This method creates eSAX symbols for a univariate time series.
 
     :param x: numeric vector representing the univariate time series
     :type: pandas.Series
     :param b: breakpoints used for the eSAX representation
     :type: numpy.ndarray
-    :param w: defines the word size used for the eSAX transformation
+    :param w: word size used for the eSAX transformation
     :type: int
-
     :return: eSAX representation of x
+    :rtype: TODO
     """
     # Perform the piecewise aggregation
     indices = ((np.linspace(start=1, stop=len(x), num=w + 1)).round(0).astype(int)) - 1
@@ -91,38 +93,38 @@ def create_esax(x, b, w):
 
 def create_esax_time_series(ts_subs, w, per):
     """
-    This method creates the eSAX representation for each subsequence
-    and puts them rowwise into a dataframe.
+    This method creates the eSAX representation for each subsequence and puts them row wise into a dataframe.
 
-    :param ts_subs: ts_subs a list of np arrays with the subsequences of the time-series
+    :param ts_subs: a list of np arrays with the subsequences of the time series
     :type ts_subs: list of np arrays
     :param w: word size used for the eSAX transformation
     :type w: int
-    :param per: percentiles depending on the ECDF of the time-series
+    :param per: percentiles depending on the ECDF of the time series
     :type per: np.quantile
-    :return: dataframe with the symbolic representations of the subsequences (rowwise)
-            and the non-symbolic subsequences in pieces_all
+    :return: dataframe with the symbolic representations of the subsequences (row wise) and the non-symbolic
+    subsequences in pieces_all
+    :rtype: TODO
     """
-    # create eSAX time series
+    # Create eSAX time series
     print("Creating the eSAX pieces")
-    # create list to access the SAX pieces later
+    # Create list to access the SAX pieces later
     pieces_all = []
 
-    # initialize empty vector for the results
+    # Initialize empty vector for the results
     ts_sax = []
 
-    # Transformation of every subsequence in ts.subs into a symbolic aggregation.
+    # Transformation of every subsequence in ts.subs into a symbolic aggregation
     startpoints = [0]
 
-    # Store the startpoint of each sequence in the original time series,
-    # the startpoint is the sum of the length of all previous sequences + 1
+    # Store the start point of each sequence in the original time series:
+    # the start point is the sum of the length of all previous sequences + 1
     # for the first sequence there are no previous sequences, thus start = 1.
 
     for i in range(0, len(ts_subs) - 1):
         sax_temp = create_esax(x=ts_subs[i], w=w, b=per)
         startpoints.append(startpoints[i] + len(ts_subs[i]))
 
-        # store the sax pieces
+        # Store the sax pieces
         pieces = sax_temp[1]
         pieces_all.append(pieces)
         ts_sax.append(create_esax(x=ts_subs[i], w=w, b=per)[0])
@@ -141,8 +143,8 @@ def create_esax_time_series(ts_subs, w, per):
 
 def perform_random_projection(ts_sax_df, num_iterations):
     """
-    This method carries out the random projection.
-    Random columns of ts_sax_df are chosen (pairwise) and a collision matrix is generated
+    This method carries out the random projection by randomly choosing columns of ts_sax_df (pairwise) and a generating
+    a collision matrix.
 
     :param ts_sax_df: dataframe with the symbolic representation of the subsequences (rowwise)
     :type: pandas.Dataframe
@@ -150,6 +152,7 @@ def perform_random_projection(ts_sax_df, num_iterations):
     approximate result gets closer to the "true" result
     :type: int
     :return: a collision matrix for identifying motif candidates
+    :rtype: TODO
     """
     # Perform the random projection
     col_mat = np.zeros((ts_sax_df.shape[0], ts_sax_df.shape[0]))
@@ -184,22 +187,24 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
                        count_ratio_2=1.5, max_dist_ratio=2.5):
     """
     This method extracts the motif pairs with the highest number of collisions in the collision matrix.
-    :param ts_sax_df: dataframe with the symbolic representation of the subsequences (rowwise)
+
+    :param ts_sax_df: dataframe with the symbolic representation of the subsequences (row wise)
     :type: pandas.Dataframe
     :param col_mat: collision matrix
     :type: pandas.Dataframe
     :param ts_subs: subsequences from the subsequence detection
-    :type: list of ndarrays
+    :type: list of numpy.ndarrays
     :param num_iterations: number of iterations for the random projection
     :type: int
     :param count_ratio_1: first count ratio
     :type: float
     :param count_ratio_2: second count ratio
     :type: float
-    :param max_dist_ratio: maximum distance ratio for determining if the euclidean distance between
-                two motif candidates is smaller than a threshold
+    :param max_dist_ratio: maximum distance ratio for determining if the euclidean distance between two motif candidates
+    is smaller than a threshold
     :type: float
-    :return: a list of ndarrays with the starting indices of the motifs in the original time-series
+    :return: a list of numpy.ndarrays with the starting indices of the motifs in the original time series
+    :rtype: TODO
     """
     # Extract the tentative motif pair
     counts = np.array([], dtype=np.int64)
@@ -272,20 +277,21 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
     return indices
 
 
-def get_motif(data, ts_subs):
+def get_motifs(data, ts_subs):
     """
     This method combines all previous steps to extract the motifs.
 
-    :param data:
+    :param data: TODO
     :type: pandas.Series
     :param ts_subs: subsequences from the subsequence detection
     :type: list of numpy.ndarrays
-    :return: dict with subsequences, sax dataframe, motifs (symbolic, non-symbolic), collision matrix,
-    indices where the motifs start, non-symbolic subsequences
+    :return: dict with subsequences, SAX dataframe, motifs (symbolic, non-symbolic), collision matrix, indices where the
+    motifs start, and non-symbolic subsequences
+    :rtype: TODO
     """
     print("Looking at 15 min data aggregation")
 
-    # calculate the ECDF for the alphabet
+    # Calculate the ECDF for the alphabet
     ecdf = get_ecdf(data)
     ecdf_df = pd.DataFrame()
     ecdf_df["x"] = ecdf[0]
@@ -293,33 +299,32 @@ def get_motif(data, ts_subs):
 
     plots.plot_ecdf(ecdf)
 
-    # set parameters for the eSAX algorithm
-    # NOTE: According to Nicole Ludwig those parameters were set based on experience and turned
-    # out to be the best working ones across 2-3 data sets
-    # (e.g. count ratios have high influence but she found a good trade-off)
-    # The parameters can be adapted for optimizing the algorithms quality
+    # Set parameters for the eSAX algorithm
+    # NOTE: According to Nicole Ludwig, these parameters were set based on experience and turned out to be the best
+    # working ones across 2-3 data sets (e.g. count ratios have high influence but she found a good trade-off)
+    # The parameters can be adapted for optimizing the algorithm's quality
 
     breaks = 10  # number of breakpoints for the eSAX algorithm
     lengths = [len(i) for i in ts_subs]
     w = round(median(lengths) + 0.5)  # word size
 
-    # set parameters for the random projection
+    # Set parameters for the random projection
 
     # Calculate the breakpoints for the eSAX algorithm
-    # set the number of breakpoints (percentiles)
+    # Set the number of breakpoints (percentiles)
     qq = np.linspace(start=0, stop=1, num=breaks + 1)
 
-    # store the percentiles
+    # Store the percentiles
     per = np.quantile(ecdf_df["x"], qq)
 
-    # use only unique percentiles for the alphabet distribution
+    # Use only unique percentiles for the alphabet distribution
     per = np.unique(per)
 
-    # add the minimum as the lowest letter
+    # Add the minimum as the lowest letter
     minimum = min([i.min() for i in ts_subs])
     per[0] = minimum
 
-    # set parameters for the random projection and motif candidates
+    # Set parameters for the random projection and motif candidates
     max_length = (max(lengths) * 0.1).__round__()
     num_iterations = min(max_length, round(w / 10))
 

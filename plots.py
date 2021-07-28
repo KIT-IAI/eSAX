@@ -11,10 +11,10 @@ from plotnine import *
 
 def plot_ecdf(ecdf):
     """
-    Method for plotting the ECDF as a pdf image
+    This method plots the ECDF as a pdf image
 
     :param ecdf: Euclidean Cumulative Distribution Function
-    :type: tuple (x,y) of np.ndarrays
+    :type: tuple (x,y) of numpy.ndarrays
     """
     plt.plot(ecdf[0], ecdf[1])
     plt.xlabel("Sample Quantiles")
@@ -26,7 +26,7 @@ def plot_ecdf(ecdf):
 
 def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
     """
-    Method for plotting the original time series
+    This method plots the original time series
 
     :param data: the original time series
     :type: pandas.Series
@@ -48,7 +48,7 @@ def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
 
 def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
     """
-    Method for plotting the subsequences time series
+    This method plots the detected subsequences of a time series
 
     :param sequences: the subsequences of the subsequence detection step
     :type: list of numpy.ndarrays
@@ -59,10 +59,8 @@ def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
     :param ylabel: label of the y-axis
     :type: string
     """
-    # create a data frame with one y variable (all sequences after each other)
-    # and a x variable (time steps)
-    # add the name of the sequence as third column
-    # by repeating the name according to the length of the sequence
+    # Create a data frame with one y variable (all sequences after each other) and a x variable (time steps), add the
+    # name of the sequence as third column by repeating the name according to the length of the sequence
     dat = []
     for i in sequences:
         dataframe = pd.DataFrame()
@@ -70,12 +68,12 @@ def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
         dataframe["y"] = i
         dat.append(dataframe)
 
-    # set names for the individual sequences
+    # Set names for the individual sequences
     list_names = []
     for i, _ in enumerate(sequences):
         list_names.append("Seq " + str(i))
 
-    # store the length off the individual sequences
+    # Store the length off the individual sequences
     lns = np.array([len(i) for i in dat])
 
     try:
@@ -93,8 +91,8 @@ def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
 
 def plot_motifs(data, found_motifs):
     """
-    This method produces the result plots of eSAX.
-    Subsequences with a similar course are grouped (motifs) and plotted into the same pdf file.
+    This method generates the result plots of eSAX. Subsequences with a similar appearance are grouped (motifs) and
+    plotted into the same pdf file.
 
     :param data: the original time series
     :type: pandas.Series
@@ -104,7 +102,7 @@ def plot_motifs(data, found_motifs):
     motif_raw = found_motifs.get("motif_raw")
     dates = pd.arrays.DatetimeArray(
         data.index, dtype=np.dtype('<M8[ns]'), freq=None, copy=False)
-    # plot all instances of one motif
+    # Plot all instances of one motif
     for m in range(0, len(motif_raw)):
         startpoints = dates[found_motifs.get("indices")[m]]
 
@@ -115,7 +113,7 @@ def plot_motifs(data, found_motifs):
         identifier = ["{} {}.{}.".format(wd, d, mth)
                       for wd, d, mth in zip(wd, d, mth)]
 
-        # transform the list of raw motifs to a list with x,y data
+        # Transform the list of raw motifs to a list with x,y data
         dat = (np.empty(shape=(0, 2)))
         dat_lengths = []
 
@@ -125,20 +123,18 @@ def plot_motifs(data, found_motifs):
             dat_lengths.append(zipped)
             dat = np.concatenate((dat, zipped), axis=0)
 
-        # set names for the individual sequences
+        # Set names for the individual sequences
         list_names = identifier
 
-        # store the length off the individual sequences
+        # Store the length off the individual sequences
         lns = [len(s) for s in dat_lengths]
 
-        # create a data frame with one y variable (all sequences after each other)
-        # and a x variable (time steps)
-        # add the name of the sequence as third column
-        # by repeating the name according to the length of the sequence
+        # Create a data frame with one y variable (all sequences after each other) and a x variable (time steps), add
+        # the name of the sequence as third column by repeating the name according to the length of the sequence TODO Das ist derselbe Kommentar wie in Zeile 62f. Passt der an beiden Stellen?
         dat = pd.DataFrame(dat, columns=["Timesteps", "Load"])
         dat["Sequence"] = np.repeat(list_names, lns, axis=0)
 
-        # NOTE This is a plot from the package Plotnine. You can use the same code as in R.
+        # NOTE: This is a plot with the package Plotnine to be able to use the same code as in R.
         p = ggplot(dat,
                    aes(x="Timesteps", y="Load", colour="Sequence")) + theme_bw() + geom_line() + facet_wrap(
             "Sequence") + theme(legend_position="none")
