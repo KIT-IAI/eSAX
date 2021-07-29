@@ -24,8 +24,8 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
     :type: float
     :param window_size: indicates the window size for the minimum search
     :type: int
-    :return: a list of numpy.ndarrays containing the subsequences and list of start points
-    :rtype: TODO
+    :return: a list of numpy.ndarrays containing the subsequences (dmin) and list of start points (localmin)
+    :rtype: list of numpy.ndarrays (dmin), list (localmin)
     """
     dmin = []
     localmin = []
@@ -123,7 +123,7 @@ def get_subsequences(data, measuring_interval):
     :param data: original time series of interest
     :type: pandas.Series
     :return: The subsequences as a list of np.ndarrays
-    :rtype: TODO
+    :rtype: list of numpy.ndarrays
     """
     # Create the subsequences with day or subday patterns
 

@@ -129,8 +129,8 @@ def plot_motifs(data, found_motifs):
         # Store the length off the individual sequences
         lns = [len(s) for s in dat_lengths]
 
-        # Create a data frame with one y variable (all sequences after each other) and a x variable (time steps), add
-        # the name of the sequence as third column by repeating the name according to the length of the sequence TODO Das ist derselbe Kommentar wie in Zeile 62f. Passt der an beiden Stellen?
+        # Create a data frame with one y variable (all motifs after each other) and a x variable (time steps), add
+        # the name of the sequence as third column by repeating the name according to the length of the sequence
         dat = pd.DataFrame(dat, columns=["Timesteps", "Load"])
         dat["Sequence"] = np.repeat(list_names, lns, axis=0)
 
