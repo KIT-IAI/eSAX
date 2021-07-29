@@ -17,14 +17,13 @@ import get_subsequences as subs
 def load_data():
     """
     This method loads data from the data folder.
-    NOTE: Two examples for data loading exist:
-    1) UCI building load dataset
-    For access to this dataset ask Oliver Neumann.
+    NOTE: The UCI ElectricityLoadDiagrams20112014 Data Set serves as an examples for data loading here (source:
+    https://archive.ics.uci.edu/ml/datasets/ElectricityLoadDiagrams20112014).
 
     :return: the univariate time series of interest
     :rtype: pandas.Series
     """
-    # Example 1: UCI building load dataset
+    # Example: UCI building load dataset
     path = os.path.join("data", "LD2011_2014_1.txt")
     df = pd.read_csv(
         path, index_col=0, parse_dates=True,

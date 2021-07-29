@@ -20,7 +20,7 @@ def get_ecdf(data):
     :param data: a numeric vector representing the univariate time series
     :type data: pandas.Series
     :return: ECDF function of the time series
-    :rtype:
+    :rtype: (x,y) -> x and y numpy.ndarrays
     """
     # Drop all values = 0
     data = data[np.array(data, dtype=np.int64) != 0]
