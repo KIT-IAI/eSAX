@@ -3,6 +3,7 @@ MIT License
 Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 """
 
+import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -100,44 +101,83 @@ def plot_motifs(data, found_motifs):
     :type: dict
     """
     motif_raw = found_motifs.get("motif_raw")
-    dates = pd.arrays.DatetimeArray(
-        data.index, dtype=np.dtype('<M8[ns]'), freq=None, copy=False)
-    # Plot all instances of one motif
-    for m in range(0, len(motif_raw)):
-        startpoints = dates[found_motifs.get("indices")[m]]
+    # If the time-series does not have a timestamp column, the motif plots are described with a number.
+    # In case there is timestamp column, the dates of the motifs are added to the plots.
+    if isinstance(data.index.to_series()[0], datetime.date):
+        dates = data.index
+        # plot all instances of one motif
+        for m in range(0, len(motif_raw)):
+            startpoints = dates[found_motifs.get("indices")[m]]
 
-        wd = [x.day_name() for x in startpoints]
-        d = [x.day for x in startpoints]
-        mth = [x.month for x in startpoints]
+            wd = [x.day_name() for x in startpoints]
+            d = [x.day for x in startpoints]
+            mth = [x.month for x in startpoints]
 
-        identifier = ["{} {}.{}.".format(wd, d, mth)
-                      for wd, d, mth in zip(wd, d, mth)]
+            identifier = ["{} {}.{}.".format(wd, d, mth)
+                          for wd, d, mth in zip(wd, d, mth)]
 
-        # Transform the list of raw motifs to a list with x,y data
-        dat = (np.empty(shape=(0, 2)))
-        dat_lengths = []
+            # transform the list of raw motifs to a list with x,y data
+            dat = (np.empty(shape=(0, 2)))
+            dat_lengths = []
 
-        for i in motif_raw[m]:
-            seq = np.linspace(start=1, stop=len(i), num=len(i), dtype="int64")
-            zipped = np.array(list(zip(seq, i)))
-            dat_lengths.append(zipped)
-            dat = np.concatenate((dat, zipped), axis=0)
+            for i in motif_raw[m]:
+                seq = np.linspace(start=1, stop=len(i), num=len(i), dtype="int64")
+                zipped = np.array(list(zip(seq, i)))
+                dat_lengths.append(zipped)
+                dat = np.concatenate((dat, zipped), axis=0)
 
-        # Set names for the individual sequences
-        list_names = identifier
+            # set names for the individual sequences
+            if len(set(identifier)) > 1:
+                list_names = identifier
+            else:
+                list_names = [y + "(" + str(x) + ")" for x, y in enumerate(identifier)]
 
-        # Store the length off the individual sequences
-        lns = [len(s) for s in dat_lengths]
+            # store the length off the individual sequences
+            lns = [len(s) for s in dat_lengths]
 
-        # Create a data frame with one y variable (all motifs after each other) and a x variable (time steps), add
-        # the name of the sequence as third column by repeating the name according to the length of the sequence
-        dat = pd.DataFrame(dat, columns=["Timesteps", "Load"])
-        dat["Sequence"] = np.repeat(list_names, lns, axis=0)
+            # create a data frame with one y variable (all sequences after each other)
+            # and a x variable (time steps)
+            # add the name of the sequence as third column
+            # by repeating the name according to the length of the sequence
+            dat = pd.DataFrame(dat, columns=["Timesteps", "Load"])
+            dat["Sequence"] = np.repeat(list_names, lns, axis=0)
 
-        # NOTE: This is a plot with the package Plotnine to be able to use the same code as in R.
-        p = ggplot(dat,
-                   aes(x="Timesteps", y="Load", colour="Sequence")) + theme_bw() + geom_line() + facet_wrap(
-            "Sequence") + theme(legend_position="none")
-        p.save("eMotif_{}.pdf".format(m), width=14, height=10)
+            # NOTE This is a plot from the package Plotnine. You can use the same code as in R.
+            p = ggplot(dat,
+                       aes(x="Timesteps", y="Load", colour="Sequence")) + theme_bw() + geom_line() + facet_wrap(
+                "Sequence") + theme(legend_position="none")
+            p.save("eMotif_{}.pdf".format(m), width=14, height=10)
+
+    else:
+        for m in range(0, len(motif_raw)):
+            startpoints = found_motifs.get("indices")[m]
+            identifier = startpoints
+
+            dat = (np.empty(shape=(0, 2)))
+            dat_lengths = []
+            for i in motif_raw[m]:
+                seq = np.linspace(start=1, stop=len(i), num=len(i), dtype="int64")
+                zipped = np.array(list(zip(seq, i)))
+                dat_lengths.append(zipped)
+                dat = np.concatenate((dat, zipped), axis=0)
+
+            # set names for the individual sequences
+            list_names = identifier
+
+            # store the length off the individual sequences
+            lns = [len(s) for s in dat_lengths]
+
+            # create a data frame with one y variable (all sequences after each other)
+            # and a x variable (time steps)
+            # add the name of the sequence as third column
+            # by repeating the name according to the length of the sequence
+            dat = pd.DataFrame(dat, columns=["Timesteps", "Load"])
+            dat["Sequence"] = np.repeat(list_names, lns, axis=0)
+
+            # NOTE This is a plot from the package Plotnine. You can use the same code as in R.
+            p = ggplot(dat,
+                       aes(x="Timesteps", y="Load", colour="Sequence")) + theme_bw() + geom_line() + facet_wrap(
+                "Sequence") + theme(legend_position="none")
+            p.save("eMotif_{}.pdf".format(m), width=14, height=10)
 
     print("All motifs plotted ...")
