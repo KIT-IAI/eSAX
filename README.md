@@ -21,7 +21,7 @@ Available methods for subsequence detection:
 
 The method get_subsequences(data, measuring_interval) returns a list of numpy.ndarray where each contains one subsequence.
 
-<code>get_motifs.py:</code> Extracts eSAX motifs from the identified subsequences. First, the Euclidean Cumulative Distribution Function (ECDF) of the time series is calculated to find the right percentiles for the allocation of the SAX letters.
+<code>get_motifs.py:</code> Extracts eSAX motifs from the identified subsequences. First, the Empirical Cumulative Distribution Function (ECDF) of the time series is calculated to find the right percentiles for the allocation of the SAX letters.
 After the allocation of these letter to the subsequences, the resulting SAX representations of the subsequences are extracted with a random projection and a collision matrix is generated. The pairs of subsequences that have a high collision value are declared as motif candidates.
 To prepare the decision whether two candidates belong to the same motif, the Euclidean distance between the two subsequences has to be smaller than a threshold value. In case of two candidates with unequal length, dynamic time warping is used to warp these subsequences to equal length such that the Euclidean distance can be calculated. Finally, the indexes of the found motifs are checked for overlap to decide whether they belong to the same motif:
 For example, if the start indices of two motif pair are (12,150) and the start indices of another pair are (150,300), all three subsequences will belong to the same motif.
