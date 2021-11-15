@@ -1,6 +1,6 @@
 <h1>Energy Time Series Motif Discovery using Symbolic Aggregated Approximation (eSAX)</h1>
 
-This Python implementation of eSAX is based on the [original eSAX implementation in R](https://github.com/nicoleludwig/eSAX) from Nicole Ludwig.
+This Python implementation of eSAX is based on the [original eSAX implementation in R](https://github.com/mlsustainableenergy/eSAX) from Nicole Ludwig.
 Thereby, this implementation is based on the corresponding paper:
 
 >N. Ludwig, L. Barth, D. Wagner, and V. Hagenmeyer (2019). “Industrial Demand-Side Flexibility: A Benchmark Data Set”. In: Proceedings of the Ninth International Conference on Future Energy Systems - e-Energy ’19. The Association for Computing Machinery, pp. 460–473. doi: [10.1145/3307772.3331021](https://doi.org/10.1145/3307772.3331021)
