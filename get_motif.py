@@ -3,7 +3,6 @@ MIT License
 Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 """
 
-from dtaidistance import dtw
 from itertools import combinations
 import numpy as np
 import pandas as pd
@@ -196,7 +195,8 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
     :type: list of numpy.ndarrays
     :param num_iterations: number of iterations for the random projection
     :type: int
-    :param count_ratio_1: first count ratio
+    :param count_ratio_1: influences if a collision matrix entry becomes a candidate
+    (higher count_ratio_1 lowers the threshold)
     :type: float
     :param count_ratio_2: second count ratio
     :type: float
@@ -235,8 +235,8 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
         cand_1 = np.array(ts_subs[x])
         cand_2 = np.array(ts_subs[y])
 
-        # Dynamic Time Warping is used for candidates of different length
-        dist_raw = dtw.distance(cand_1, cand_2)
+        # Dynamic time warping can be used for candidates of different length
+        dist_raw = np.linalg.norm(cand_1 - cand_2)
 
         col_no = col_mat.iloc[x, :]
         ind_cand = np.where(col_no > (max(col_no) / count_ratio_2))[0]
@@ -251,7 +251,7 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
                 cand_sel = []
                 dist_res = []
                 for j in ind_temp:
-                    dist_res.append(dtw.distance(cand_1, ts_subs[j]))
+                    dist_res.append(np.linalg.norm(cand_1 - ts_subs[j]))
                     cand_sel.append(ts_subs[j])
                 ind_final = ts_sax_df.iloc[
                     ind_temp[[i for i, v in enumerate(dist_res) if v <= max_dist_ratio * dist_raw]], 0].to_numpy()
@@ -265,14 +265,7 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
         indices.append(pair)
 
     # Combine the indices if there is any overlap
-    vec_subset = np.repeat(0, len(indices))
-    for i in range(0, len(indices) - 1):
-        for j in range(i + 1, len(indices)):
-            if len(np.intersect1d(indices[i], indices[j])) > 0:
-                indices[j] = np.unique(np.concatenate((indices[i], indices[j])))
-                vec_subset[i] = 1
-
-    indices = [indices[u] for u in np.where(vec_subset == 0)[0]]
+    indices = index_merge(indices)
 
     return indices
 
@@ -290,7 +283,6 @@ def get_motifs(data, ts_subs):
     :rtype: {list of numpy.ndarrays, pandas.DataFrame, list of np.ndarrays, list of pandas.DataFrames, pandas.DataFrame,
     list of numpy.ndarrays, list of numpy.ndarrays}
     """
-    print("Looking at 15 min data aggregation")
 
     # Calculate the ECDF for the alphabet
     ecdf = get_ecdf(data)
@@ -341,7 +333,7 @@ def get_motifs(data, ts_subs):
     motif_raw = []
     motif_sax = []
     for val in indices:
-        motif_raw_indices = np.where(np.isin(ts_sax_df.iloc[:, 0].to_numpy(), val))[0]
+        motif_raw_indices = np.where(np.isin(ts_sax_df.iloc[:, 0].to_numpy(), list(val)))[0]
         motif_raw.append([ts_subs[v] for v in motif_raw_indices])
         motif_sax.append(ts_sax_df.iloc[motif_raw_indices, :])
 
@@ -351,3 +343,26 @@ def get_motifs(data, ts_subs):
     print("Done")
 
     return found_motifs
+
+
+def index_merge(lsts):
+    """
+    Merging algorithm that merges lists if they are not disjoint.
+    Returns a list of disjoint lists.
+    :param lsts: list of lists
+    :type: list
+    :return: list of disjoint lists
+    :rtype: list
+    """
+    newsets, sets = [set(lst) for lst in lsts], []
+    while len(sets) != len(newsets):
+        sets, newsets = newsets, []
+        for aset in sets:
+            for eachset in newsets:
+                if not aset.isdisjoint(eachset):
+                    eachset.update(aset)
+                    break
+            else:
+                newsets.append(aset)
+
+    return newsets

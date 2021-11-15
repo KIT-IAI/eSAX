@@ -107,7 +107,7 @@ def plot_motifs(data, found_motifs):
         dates = data.index
         # plot all instances of one motif
         for m in range(0, len(motif_raw)):
-            startpoints = dates[found_motifs.get("indices")[m]]
+            startpoints = dates[list(found_motifs.get("indices")[m])]
 
             wd = [x.day_name() for x in startpoints]
             d = [x.day for x in startpoints]
