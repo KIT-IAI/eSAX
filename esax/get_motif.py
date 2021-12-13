@@ -340,6 +340,7 @@ def get_motifs(data, ts_subs):
     found_motifs = {'ts_subs': ts_subs, 'ts_sax_df': ts_sax_df, 'motif_raw': motif_raw,
                     'motif_sax': motif_sax, 'col_mat': col_mat, 'indices': indices, 'pieces_all': pieces_all}
 
+    plots.plot_repr_motif(found_motifs)
     print("Done")
 
     return found_motifs
