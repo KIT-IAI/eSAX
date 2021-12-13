@@ -221,3 +221,4 @@ def plot_repr_motif(results):
         plt.savefig("repr_motif_{}.png".format(idx))
         plt.clf()
     plt.close()
+    
