@@ -9,9 +9,9 @@ import sys
 import numpy as np
 import pandas as pd
 
-import get_motif as mot
-import plots
-import get_subsequences as subs
+import esax.get_motif as mot
+import esax.plots as plots
+import esax.get_subsequences as subs
 
 
 def load_data():
@@ -24,7 +24,7 @@ def load_data():
     :rtype: pandas.Series
     """
     # Example: UCI building load dataset
-    path = os.path.join("data", "LD2011_2014_1.txt")
+    path = os.path.join("data", "LD2012.txt")
     df = pd.read_csv(
         path, index_col=0, parse_dates=True,
         delimiter=";", decimal=",", header=0

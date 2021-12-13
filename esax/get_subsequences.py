@@ -4,8 +4,7 @@ Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 """
 
 import numpy as np
-import plots
-
+import esax.plots as plots
 
 def determine_subsequences(data, event, window, custom_event=0.00, window_size=100):
     """

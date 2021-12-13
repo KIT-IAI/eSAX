@@ -6,7 +6,7 @@ Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 from itertools import combinations
 import numpy as np
 import pandas as pd
-import plots
+import esax.plots as plots
 import random
 from statistics import median
 import string
