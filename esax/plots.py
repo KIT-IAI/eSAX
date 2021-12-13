@@ -4,6 +4,8 @@ Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 """
 
 import datetime
+from statistics import median, stdev
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -23,7 +25,7 @@ def plot_ecdf(ecdf):
     plt.ylabel('$\^{F}_n(x)$')
     plt.title("Empirical Cumulative Distribution Function")
     plt.savefig("ecdf_Power.pdf")
-
+    plt.close()
 
 def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
     """
@@ -45,6 +47,7 @@ def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
     plt.ylabel(ylabel)
     plt.tight_layout()
     plt.savefig(filepath)
+    plt.close()
 
 
 def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
@@ -181,3 +184,40 @@ def plot_motifs(data, found_motifs):
             p.save("eMotif_{}.pdf".format(m), width=14, height=10)
 
     print("All motifs plotted ...")
+
+
+def plot_repr_motif(results):
+    """
+    This methods calculates the median period of all the periods in one cluster
+    :param results:
+    :param filename:
+    :return:
+    """
+    for idx,motif in enumerate(results['motif_raw']):
+        motif_df = pd.DataFrame(motif)
+        # mean of all sequences in one moment at each point of time
+        repr = []
+        # std of all measurements at each point of time
+        std_seq = []
+
+        # Hint of Nicole: In case there is more than one motif, the distance ratio parameters have to be adjusted
+        repr_motif = motif_df.median(axis=0)
+        std_seq = motif_df.std(axis=0)
+        up_quantile = motif_df.quantile(q=0.75)
+        low_quantile = motif_df.quantile(q=0.25)
+
+        # plot actual load curve
+        plt.plot(repr_motif, '-k')
+        plt.plot(std_seq, '-b')
+        plt.plot(up_quantile, '--r')
+        plt.plot(low_quantile, '--r')
+
+        # set some plot parameters
+        plt.xlabel('Timesteps')
+        plt.xticks(rotation=45)
+        plt.ylabel('Load [MW]')
+        plt.legend(['repr_period', 'std_deviation', 'quartiles (25,75)'], loc='lower right')
+        plt.tight_layout()
+        plt.savefig("repr_motif_{}.png".format(idx))
+        plt.clf()
+    plt.close()
