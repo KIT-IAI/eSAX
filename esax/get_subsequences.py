@@ -130,6 +130,7 @@ def get_subsequences(data, measuring_interval):
     window = round(24 * ((60 * 60) / measuring_interval))
 
     # Get sequences and store the start points and sequences separately to avoid lists of lists
+    # TODO: only 'none' is working at the moment
     sequences, _ = determine_subsequences(data=data, event="none", window=window)
 
     # Plot input (whole time-series) and output (sequences) data
