@@ -57,7 +57,8 @@ def main():
 
     # Get motifs
     if ts_subs:
-        found_motifs = mot.get_motifs(data, ts_subs)
+        found_motifs = mot.get_motifs(data, ts_subs, breaks=10, word_length=0, num_iterations=0,
+                                      mask_size=2, mdr=2.5, cr1=5, cr2=1.5)
         if found_motifs:
             plots.plot_ecdf(found_motifs['ecdf'], 'run')
             plots.plot_motifs(data.index, found_motifs['motifs_raw'], found_motifs['indexes'], 'run')

@@ -139,7 +139,7 @@ def create_esax_time_series(ts_subs, w, per):
     return ts_sax_df, pieces_all
 
 
-def perform_random_projection(ts_sax_df, num_iterations):
+def perform_random_projection(ts_sax_df, num_iterations, mask_size):
     """
     This method carries out the random projection by randomly choosing columns of ts_sax_df (pairwise) and a generating
     a collision matrix.
@@ -157,7 +157,7 @@ def perform_random_projection(ts_sax_df, num_iterations):
     col_mat = pd.DataFrame(col_mat).astype(int)
     for i in range(0, num_iterations):
         random.seed(i + 42)
-        col_pos = sorted(random.sample(list(ts_sax_df.columns.values)[1:], 2))
+        col_pos = sorted(random.sample(list(ts_sax_df.columns.values)[1:], mask_size))
         sax_mask = pd.DataFrame(ts_sax_df.iloc[:, col_pos])
         unique_lab = sax_mask.drop_duplicates()
 
@@ -269,10 +269,24 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
     return indices
 
 
-def get_motifs(data, ts_subs):
+def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mask_size, mdr, cr1, cr2):
     """
     This method combines all previous steps to extract the motifs.
 
+    :param cr2: count ratio 2
+    :type cr2: float
+    :param cr1: count ratio 1
+    :type cr1: float
+    :param mdr: maximum distance ratio
+    :type mdr: float
+    :param mask_size: size of the sampled mask
+    :type mask_size: int
+    :param num_iterations: number of iterations for the random projection
+    :type num_iterations: int
+    :param word_length: length of the word, that represents one sequence
+    :type word_length: int
+    :param breaks: number of quantiles in which the distribution function is separated
+    :type breaks: int
     :param data: the univariate time series
     :type: pandas.Series
     :param ts_subs: subsequences from the subsequence detection
@@ -295,9 +309,9 @@ def get_motifs(data, ts_subs):
     # working ones across 2-3 data sets (e.g. count ratios have high influence but she found a good trade-off)
     # The parameters can be adapted for optimizing the algorithm's quality
 
-    breaks = 10  # number of breakpoints for the eSAX algorithm
     lengths = [len(i) for i in ts_subs]
-    w = round(median(lengths) + 0.5)  # word size
+    if word_length == 0:
+        word_length = round(median(lengths) + 0.5)
 
     # Set parameters for the random projection
 
@@ -316,17 +330,18 @@ def get_motifs(data, ts_subs):
     per[0] = minimum
 
     # Set parameters for the random projection and motif candidates
-    max_length = (max(lengths) * 0.1).__round__()
-    num_iterations = min(max_length, round(w / 10))
+    if num_iterations == 0:
+        max_length = (max(lengths) * 0.1).__round__()
+        num_iterations = min(max_length, round(word_length / 10))
 
     # Create eSAX time Series
-    ts_sax_df, pieces_all = create_esax_time_series(ts_subs, w, per)
+    ts_sax_df, pieces_all = create_esax_time_series(ts_subs, word_length, per)
 
     # Perform the random projection
-    col_mat = perform_random_projection(ts_sax_df, num_iterations)
+    col_mat = perform_random_projection(ts_sax_df, num_iterations, mask_size)
 
     # Extract motif candidates
-    indexes = extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations)
+    indexes = extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, cr1, cr2, mdr)
 
     motifs_raw = []
     motifs_sax = []
