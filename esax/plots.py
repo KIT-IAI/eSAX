@@ -93,24 +93,24 @@ def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
     p.save(os.path.join(filepath, "all_sequences.png"), width=14, height=10)
 
 
-def plot_motifs(data, motifs_raw, indexes, filepath):
+def plot_motifs(data_index, motifs_raw, indexes, filepath):
     """
     This method generates the result plots of eSAX. Subsequences with a similar appearance are grouped (motifs) and
     plotted into the same pdf file.
 
+    :param filepath: path where to store the plots
+    :param indexes: starting index of each sequence in a motif
+    :param motifs_raw: list of motifs found by eSAX
     :param data: the original time series
     :type: pandas.Series
-    :param found_motifs: the result list of get_motif
-    :type: dict
     """
     motifs_raw = motifs_raw
     # If the time-series does not have a timestamp column, the motif plots are described with a number.
     # In case there is timestamp column, the dates of the motifs are added to the plots.
-    if isinstance(data.index.to_series()[0], datetime.date):
-        dates = data.index
+    if isinstance(data_index.to_series()[0], datetime.date):
         # plot all instances of one motif
         for m in range(0, len(motifs_raw)):
-            startpoints = dates[list(indexes[m])]
+            startpoints = data_index[list(indexes[m])]
 
             wd = [x.day_name() for x in startpoints]
             d = [x.day for x in startpoints]
