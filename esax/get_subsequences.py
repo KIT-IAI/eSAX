@@ -131,8 +131,8 @@ def get_subsequences(data, resolution):
 
     # Get sequences and store the start points and sequences separately to avoid lists of lists
     # TODO: only 'none' is working at the moment
-    sequences, _ = determine_subsequences(data=data, event="none", window=window)
+    sequences, startpoints = determine_subsequences(data=data, event="none", window=window)
 
     print("Done")
 
-    return sequences
+    return sequences, startpoints
