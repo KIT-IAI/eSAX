@@ -41,17 +41,17 @@ def main():
     # Calculate the measurement intervals
     try:
         dates = pd.arrays.DatetimeArray(data.index, dtype=np.dtype("<M8[ns]"), freq=None, copy=False)
-        time_dif_in_sec = (dates[1] - dates[0]).seconds
+        resolution = (dates[1] - dates[0]).seconds / 3600
     except:
         print("Unexpected error:", sys.exc_info()[0])
-        time_dif_in_sec = 60
+        resolution = 1
         raise
 
-    if time_dif_in_sec == 0:
-        time_dif_in_sec = 60
+    if resolution == 0:
+        resolution = 1
 
     # Get subsequences
-    ts_subs = subs.get_subsequences(data, time_dif_in_sec)
+    ts_subs = subs.get_subsequences(data, resolution)
     plots.plot_time_series(data, 'run')
     plots.plot_subsequences(ts_subs, 'run')
 

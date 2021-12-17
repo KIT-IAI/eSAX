@@ -112,13 +112,13 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
     return dmin, localmin
 
 
-def get_subsequences(data, measuring_interval):
+def get_subsequences(data, resolution):
     """
     This method separates the time series into subsequences.
     ASSUME: All measurements must have a timestamp and no NaN values should be present.
 
-    :param measuring_interval: time difference in seconds between the measurements of the time series
-    :type: int
+    :param resolution: measurement resolution (e.g. 0.25 == 15 min)
+    :type: float
     :param data: original time series of interest
     :type: pandas.Series
     :return: The subsequences as a list of np.ndarrays
@@ -127,7 +127,7 @@ def get_subsequences(data, measuring_interval):
     # Create the subsequences with day or subday patterns
 
     # Calculate how many measuring intervals fit in one day (in seconds)
-    window = round(24 * ((60 * 60) / measuring_interval))
+    window = round(24 / resolution)
 
     # Get sequences and store the start points and sequences separately to avoid lists of lists
     # TODO: only 'none' is working at the moment
