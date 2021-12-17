@@ -60,7 +60,7 @@ def main():
         found_motifs = mot.get_motifs(data, ts_subs)
         if found_motifs:
             plots.plot_ecdf(found_motifs['ecdf'], 'run')
-            plots.plot_motifs(data, found_motifs, 'run')
+            plots.plot_motifs(data, found_motifs['motifs_raw'], found_motifs['indexes'], 'run')
             plots.plot_repr_motif(found_motifs['motifs_raw'], 'run')
 
 

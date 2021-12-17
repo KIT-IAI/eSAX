@@ -326,17 +326,17 @@ def get_motifs(data, ts_subs):
     col_mat = perform_random_projection(ts_sax_df, num_iterations)
 
     # Extract motif candidates
-    indices = extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations)
+    indexes = extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations)
 
     motifs_raw = []
     motifs_sax = []
-    for val in indices:
+    for val in indexes:
         motif_raw_indices = np.where(np.isin(ts_sax_df.iloc[:, 0].to_numpy(), list(val)))[0]
         motifs_raw.append([ts_subs[v] for v in motif_raw_indices])
         motifs_sax.append(ts_sax_df.iloc[motif_raw_indices, :])
 
     found_motifs = {'ts_subs': ts_subs, 'ts_sax_df': ts_sax_df, 'motifs_raw': motifs_raw,
-                    'motifs_sax': motifs_sax, 'col_mat': col_mat, 'indices': indices,
+                    'motifs_sax': motifs_sax, 'col_mat': col_mat, 'indexes': indexes,
                     'pieces_all': pieces_all, 'ecdf': ecdf}
 
     print("Done")
