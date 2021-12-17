@@ -98,12 +98,14 @@ def plot_motifs(data_index, motifs_raw, indexes, filepath):
     This method generates the result plots of eSAX. Subsequences with a similar appearance are grouped (motifs) and
     plotted into the same pdf file.
 
-    :param data_index:
-    :param filepath: path where to store the plots
-    :param indexes: starting index of each sequence in a motif
+    :param data_index: index of the original data
+    :type data_index: pd.DateTimeIndex or range
     :param motifs_raw: list of motifs found by eSAX
-    :param data_index: indexes of the original time series
-    :type: pandas.Series
+    :type motifs_raw: list of lists
+    :param indexes: starting index of each sequence in a motif
+    :type indexes: list of lists
+    :param filepath: path where to store the plots
+    :type filepath: path (os)
     """
     # If the time-series does not have a timestamp column, the motif plots are described with a number.
     # In case there is timestamp column, the dates of the motifs are added to the plots.
@@ -190,8 +192,9 @@ def plot_repr_motif(motifs_raw, filepath):
     """
     This methods calculates the median period of all the periods in one cluster
     :param motifs_raw: list containing one ore more motifs
-    :param filepath: name of the
-    :return:
+    :type motifs_raw: list of lists
+    :param filepath: path to folder where plot should be stored
+    :type filepath: path (os)
     """
     for idx,motif in enumerate(motifs_raw):
         motif_df = pd.DataFrame(motif)
@@ -203,20 +206,20 @@ def plot_repr_motif(motifs_raw, filepath):
         # Hint of Nicole: In case there is more than one motif, the distance ratio parameters have to be adjusted
         repr_motif = motif_df.median(axis=0)
         std_seq = motif_df.std(axis=0)
-        up_quantile = motif_df.quantile(q=0.75)
-        low_quantile = motif_df.quantile(q=0.25)
+        up_quartile = motif_df.quantile(q=0.75)
+        low_quartile = motif_df.quantile(q=0.25)
 
         # plot actual load curve
         plt.plot(repr_motif, '-k')
         plt.plot(std_seq, '-b')
-        plt.plot(up_quantile, '--r')
-        plt.plot(low_quantile, '--r')
+        plt.plot(up_quartile, '--r')
+        plt.plot(low_quartile, '--r')
 
         # set some plot parameters
-        plt.xlabel('Timesteps')
+        plt.xlabel('time steps')
         plt.xticks(rotation=45)
-        plt.ylabel('Load [MW]')
-        plt.legend(['repr_period', 'std_deviation', 'quartiles (25,75)'], loc='lower right')
+        plt.ylabel('y')
+        plt.legend(['median of motif_{}'.format(idx), 'std_deviation', 'quartiles (25,75)'], loc='lower right')
         plt.tight_layout()
         plt.savefig(os.path.join(filepath, "repr_motif_{}.png".format(idx)))
         plt.clf()
