@@ -133,11 +133,6 @@ def get_subsequences(data, measuring_interval):
     # TODO: only 'none' is working at the moment
     sequences, _ = determine_subsequences(data=data, event="none", window=window)
 
-    # Plot input (whole time-series) and output (sequences) data
-    # NOTE: 'data' variable need unchanged!
-    plots.plot_time_series(data, "CompleteTimeSeries.pdf")
-    plots.plot_subsequences(sequences, "All_Sequences.pdf")
-
     print("Done")
 
     return sequences

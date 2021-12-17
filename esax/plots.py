@@ -4,15 +4,14 @@ Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 """
 
 import datetime
-from statistics import median, stdev
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import os
 from plotnine import *
 
 
-def plot_ecdf(ecdf):
+def plot_ecdf(ecdf, filepath):
     """
     This method plots the ECDF as a pdf image
 
@@ -24,8 +23,9 @@ def plot_ecdf(ecdf):
     # Latex code for axis declarations
     plt.ylabel('$\^{F}_n(x)$')
     plt.title("Empirical Cumulative Distribution Function")
-    plt.savefig("ecdf_Power.pdf")
+    plt.savefig(os.path.join(filepath, "ecdf_Power.pdf"))
     plt.close()
+
 
 def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
     """
@@ -46,7 +46,7 @@ def plot_time_series(data, filepath, xlabel="Time", ylabel="Power"):
     plt.xticks([])
     plt.ylabel(ylabel)
     plt.tight_layout()
-    plt.savefig(filepath)
+    plt.savefig(os.path.join(filepath, "full_ts.png"))
     plt.close()
 
 
@@ -90,10 +90,10 @@ def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
     data.rename({"x": xlabel, "y": ylabel}, axis=1, inplace=True)
     p = ggplot(data, aes(x=xlabel, y=ylabel, colour="Sequence")) + theme_bw() + \
         geom_step() + facet_wrap("Sequence") + theme(legend_position="none")
-    p.save(filepath, width=14, height=10)
+    p.save(os.path.join(filepath, "all_sequences.png"), width=14, height=10)
 
 
-def plot_motifs(data, found_motifs):
+def plot_motifs(data, found_motifs, filepath):
     """
     This method generates the result plots of eSAX. Subsequences with a similar appearance are grouped (motifs) and
     plotted into the same pdf file.
@@ -103,13 +103,13 @@ def plot_motifs(data, found_motifs):
     :param found_motifs: the result list of get_motif
     :type: dict
     """
-    motif_raw = found_motifs.get("motif_raw")
+    motifs_raw = found_motifs.get("motifs_raw")
     # If the time-series does not have a timestamp column, the motif plots are described with a number.
     # In case there is timestamp column, the dates of the motifs are added to the plots.
     if isinstance(data.index.to_series()[0], datetime.date):
         dates = data.index
         # plot all instances of one motif
-        for m in range(0, len(motif_raw)):
+        for m in range(0, len(motifs_raw)):
             startpoints = dates[list(found_motifs.get("indices")[m])]
 
             wd = [x.day_name() for x in startpoints]
@@ -123,7 +123,7 @@ def plot_motifs(data, found_motifs):
             dat = (np.empty(shape=(0, 2)))
             dat_lengths = []
 
-            for i in motif_raw[m]:
+            for i in motifs_raw[m]:
                 seq = np.linspace(start=1, stop=len(i), num=len(i), dtype="int64")
                 zipped = np.array(list(zip(seq, i)))
                 dat_lengths.append(zipped)
@@ -149,16 +149,16 @@ def plot_motifs(data, found_motifs):
             p = ggplot(dat,
                        aes(x="Timesteps", y="Load", colour="Sequence")) + theme_bw() + geom_line() + facet_wrap(
                 "Sequence") + theme(legend_position="none")
-            p.save("eMotif_{}.pdf".format(m), width=14, height=10)
+            p.save(os.path.join(filepath, "eMotif_{}.png".format(m)), width=14, height=10)
 
     else:
-        for m in range(0, len(motif_raw)):
+        for m in range(0, len(motifs_raw)):
             startpoints = found_motifs.get("indices")[m]
             identifier = startpoints
 
             dat = (np.empty(shape=(0, 2)))
             dat_lengths = []
-            for i in motif_raw[m]:
+            for i in motifs_raw[m]:
                 seq = np.linspace(start=1, stop=len(i), num=len(i), dtype="int64")
                 zipped = np.array(list(zip(seq, i)))
                 dat_lengths.append(zipped)
@@ -181,19 +181,19 @@ def plot_motifs(data, found_motifs):
             p = ggplot(dat,
                        aes(x="Timesteps", y="Load", colour="Sequence")) + theme_bw() + geom_line() + facet_wrap(
                 "Sequence") + theme(legend_position="none")
-            p.save("eMotif_{}.pdf".format(m), width=14, height=10)
+            p.save(os.path.join(filepath, "eMotif_{}.png".format(m)), width=14, height=10)
 
     print("All motifs plotted ...")
 
 
-def plot_repr_motif(results):
+def plot_repr_motif(motifs_raw, filepath):
     """
     This methods calculates the median period of all the periods in one cluster
-    :param results:
-    :param filename:
+    :param motifs_raw: list containing one ore more motifs
+    :param path: name of the
     :return:
     """
-    for idx,motif in enumerate(results['motif_raw']):
+    for idx,motif in enumerate(motifs_raw):
         motif_df = pd.DataFrame(motif)
         # mean of all sequences in one moment at each point of time
         repr = []
@@ -218,7 +218,7 @@ def plot_repr_motif(results):
         plt.ylabel('Load [MW]')
         plt.legend(['repr_period', 'std_deviation', 'quartiles (25,75)'], loc='lower right')
         plt.tight_layout()
-        plt.savefig("repr_motif_{}.png".format(idx))
+        plt.savefig(os.path.join(filepath, "repr_motif_{}.png".format(idx)))
         plt.clf()
     plt.close()
     

@@ -24,7 +24,7 @@ def load_data():
     :rtype: pandas.Series
     """
     # Example: UCI building load dataset
-    path = os.path.join("data", "LD2012.txt")
+    path = os.path.join("data", "LD2011_2014_1.txt")
     df = pd.read_csv(
         path, index_col=0, parse_dates=True,
         delimiter=";", decimal=",", header=0
@@ -52,12 +52,16 @@ def main():
 
     # Get subsequences
     ts_subs = subs.get_subsequences(data, time_dif_in_sec)
+    plots.plot_time_series(data, 'run')
+    plots.plot_subsequences(ts_subs, 'run')
 
     # Get motifs
     if ts_subs:
         found_motifs = mot.get_motifs(data, ts_subs)
         if found_motifs:
-            plots.plot_motifs(data, found_motifs)
+            plots.plot_ecdf(found_motifs['ecdf'], 'run')
+            plots.plot_motifs(data, found_motifs, 'run')
+            plots.plot_repr_motif(found_motifs['motifs_raw'], 'run')
 
 
 if __name__ == "__main__":

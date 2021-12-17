@@ -6,7 +6,6 @@ Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 from itertools import combinations
 import numpy as np
 import pandas as pd
-import esax.plots as plots
 import random
 from statistics import median
 import string
@@ -290,7 +289,6 @@ def get_motifs(data, ts_subs):
     ecdf_df["x"] = ecdf[0]
     ecdf_df["y"] = ecdf[1]
 
-    plots.plot_ecdf(ecdf)
 
     # Set parameters for the eSAX algorithm
     # NOTE: According to Nicole Ludwig, these parameters were set based on experience and turned out to be the best
@@ -330,17 +328,17 @@ def get_motifs(data, ts_subs):
     # Extract motif candidates
     indices = extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations)
 
-    motif_raw = []
-    motif_sax = []
+    motifs_raw = []
+    motifs_sax = []
     for val in indices:
         motif_raw_indices = np.where(np.isin(ts_sax_df.iloc[:, 0].to_numpy(), list(val)))[0]
-        motif_raw.append([ts_subs[v] for v in motif_raw_indices])
-        motif_sax.append(ts_sax_df.iloc[motif_raw_indices, :])
+        motifs_raw.append([ts_subs[v] for v in motif_raw_indices])
+        motifs_sax.append(ts_sax_df.iloc[motif_raw_indices, :])
 
-    found_motifs = {'ts_subs': ts_subs, 'ts_sax_df': ts_sax_df, 'motif_raw': motif_raw,
-                    'motif_sax': motif_sax, 'col_mat': col_mat, 'indices': indices, 'pieces_all': pieces_all}
+    found_motifs = {'ts_subs': ts_subs, 'ts_sax_df': ts_sax_df, 'motifs_raw': motifs_raw,
+                    'motifs_sax': motifs_sax, 'col_mat': col_mat, 'indices': indices,
+                    'pieces_all': pieces_all, 'ecdf': ecdf}
 
-    plots.plot_repr_motif(found_motifs)
     print("Done")
 
     return found_motifs
