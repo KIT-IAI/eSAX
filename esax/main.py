@@ -51,7 +51,7 @@ def main():
         resolution = 1
 
     # Get subsequences
-    ts_subs, startpoints = subs.get_subsequences(data, resolution)
+    ts_subs, startpoints, indexes_subs = subs.get_subsequences(data, resolution)
     plots.plot_time_series(data, 'run')
     plots.plot_subsequences(ts_subs, 'run')
 

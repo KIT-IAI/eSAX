@@ -28,6 +28,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
     """
     dmin = []
     localmin = []
+    indexes_subs = []
 
     # The subsequences in dmin always start with the minimum
     if event == "minimum":
@@ -100,16 +101,19 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
         for i in range(0, round(len(data) / window)):
             if ((i + 1) * window) < len(data):
                 dmin.append(data[(i * window):((i + 1) * window)].to_numpy())
+                if data.index is not None:
+                    indexes_subs.append(data.index[(i * window):((i + 1) * window)].to_numpy())
             else:
                 dmin.append(data[(i * window):len(data)-1].to_numpy())
-
+                if data.index is not None:
+                    indexes_subs.append(data.index[(i * window):len(data)-1].to_numpy())
         # Save the start points (window length distance)
         for i in range(0, len(dmin)):
             localmin.append(i * window)
 
         print("Preparing list ...\n")
 
-    return dmin, localmin
+    return dmin, localmin, indexes_subs
 
 
 def get_subsequences(data, resolution):
@@ -131,8 +135,8 @@ def get_subsequences(data, resolution):
 
     # Get sequences and store the start points and sequences separately to avoid lists of lists
     # TODO: only 'none' is working at the moment
-    sequences, startpoints = determine_subsequences(data=data, event="none", window=window)
+    sequences, startpoints, indexes_subs = determine_subsequences(data=data, event="none", window=window)
 
     print("Done")
 
-    return sequences, startpoints
+    return sequences, startpoints, indexes_subs
