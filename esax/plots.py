@@ -98,16 +98,16 @@ def plot_motifs(data_index, motifs_raw, indexes, filepath):
     This method generates the result plots of eSAX. Subsequences with a similar appearance are grouped (motifs) and
     plotted into the same pdf file.
 
+    :param data_index:
     :param filepath: path where to store the plots
     :param indexes: starting index of each sequence in a motif
     :param motifs_raw: list of motifs found by eSAX
-    :param data: the original time series
+    :param data_index: indexes of the original time series
     :type: pandas.Series
     """
-    motifs_raw = motifs_raw
     # If the time-series does not have a timestamp column, the motif plots are described with a number.
     # In case there is timestamp column, the dates of the motifs are added to the plots.
-    if isinstance(data_index.to_series()[0], datetime.date):
+    if isinstance(data_index[0], datetime.date):
         # plot all instances of one motif
         for m in range(0, len(motifs_raw)):
             startpoints = data_index[list(indexes[m])]
@@ -153,7 +153,7 @@ def plot_motifs(data_index, motifs_raw, indexes, filepath):
 
     else:
         for m in range(0, len(motifs_raw)):
-            startpoints = found_motifs.get("indices")[m]
+            startpoints = indexes[m]
             identifier = startpoints
 
             dat = (np.empty(shape=(0, 2)))
@@ -190,7 +190,7 @@ def plot_repr_motif(motifs_raw, filepath):
     """
     This methods calculates the median period of all the periods in one cluster
     :param motifs_raw: list containing one ore more motifs
-    :param path: name of the
+    :param filepath: name of the
     :return:
     """
     for idx,motif in enumerate(motifs_raw):
