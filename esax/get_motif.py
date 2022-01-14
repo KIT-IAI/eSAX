@@ -181,7 +181,7 @@ def perform_random_projection(ts_sax_df, num_iterations, mask_size):
     return col_mat
 
 
-def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_1=5,
+def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_1=5.0,
                        count_ratio_2=1.5, max_dist_ratio=2.5):
     """
     This method extracts the motif pairs with the highest number of collisions in the collision matrix.
@@ -273,24 +273,25 @@ def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mask_size, md
     """
     This method combines all previous steps to extract the motifs.
 
-    :param cr2: count ratio 2
-    :type cr2: float
-    :param cr1: count ratio 1
-    :type cr1: float
-    :param mdr: maximum distance ratio
-    :type mdr: float
-    :param mask_size: size of the sampled mask
-    :type mask_size: int
-    :param num_iterations: number of iterations for the random projection
-    :type num_iterations: int
-    :param word_length: length of the word, that represents one sequence
-    :type word_length: int
-    :param breaks: number of quantiles in which the distribution function is separated
-    :type breaks: int
     :param data: the univariate time series
-    :type: pandas.Series
+    :type data: pandas.Series
     :param ts_subs: subsequences from the subsequence detection
-    :type: list of numpy.ndarrays
+    :type ts_subs: list of numpy.ndarrays
+    :param breaks: number of breakpoints in the alphabet, 10 = all quantiles of the ecdf
+    :type breaks: int
+    :param word_length: word size (always the same if sequences are of equal length)
+    :type word_length: int
+    :param num_iterations: number of iterations of the random projection algorithm (note: the motif candidate search
+    depends on it together with count_ratio_1
+    :type num_iterations: int
+    :param mask_size: mask size for random projection
+    :type mask_size: int
+    :param mdr: final distance allowed between occurrences in one motif
+    :type mdr: float
+    :param cr1: controls when entries in the collision matrix become candidate motifs
+    :type cr1: float
+    :param cr2: controls whether a candidate motif becomes a motif
+    :type cr2: float
     :return: dict with subsequences, SAX dataframe, motifs (symbolic, non-symbolic), collision matrix, indices where the
     motifs start, and non-symbolic subsequences
     :rtype: {list of numpy.ndarrays, pandas.DataFrame, list of np.ndarrays, list of pandas.DataFrames, pandas.DataFrame,
