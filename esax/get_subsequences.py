@@ -50,10 +50,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
         dmin.append(data[0:localmin[0]].to_numpy())
 
         for i in range(0, len(localmin) - 1):
-            if i == 0:
-                dmin.append(data[localmin[i] - 1:(localmin[i + 1])].to_numpy())
-            else:
-                dmin.append(data[localmin[i]:(localmin[i + 1])].to_numpy())
+            dmin.append(data[localmin[i]:(localmin[i + 1])].to_numpy())
         dmin.append(data[localmin[len(localmin) - 1]:len(data)].to_numpy())
 
     elif event == "zero":
