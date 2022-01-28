@@ -57,7 +57,7 @@ def create_esax(x, b, w):
     :rtype: [list, numpy.ndarray, numpy.ndarray, np.ndarray]
     """
     # Perform the piecewise aggregation
-    indices = ((np.linspace(start=1, stop=len(x), num=w + 1)).round(0).astype(int)) - 1
+    indices = ((np.linspace(start=1, stop=len(x), num=w)).round(0).astype(int)) - 1
     pieces = np.empty(shape=len(indices) - 1)
 
     for i in range(0, (len(indices) - 1)):
