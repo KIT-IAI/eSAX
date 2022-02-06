@@ -331,8 +331,9 @@ def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mask_size, md
     per[0] = minimum
 
     # Set parameters for the random projection and motif candidates
+    max_length = (max(lengths) * 0.1).__round__()
+
     if num_iterations == 0:
-        max_length = (max(lengths) * 0.1).__round__()
         num_iterations = min(max_length, round(word_length / 10))
 
     # Create eSAX time Series
