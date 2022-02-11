@@ -48,45 +48,38 @@ def create_esax(x, b, w):
     This method creates eSAX symbols for a univariate time series.
 
     :param x: numeric vector representing the univariate time series
-    :type: pandas.Series
+    :type: numpy.array
     :param b: breakpoints used for the eSAX representation
-    :type: numpy.ndarray
+    :type: numpy.array
     :param w: word size used for the eSAX transformation
     :type: int
     :return: eSAX representation of x
-    :rtype: [list, numpy.ndarray, numpy.ndarray, np.ndarray]
+    :rtype: [list, numpy.array, numpy.array, np.array]
     """
     # Perform the piecewise aggregation
-    indices = ((np.linspace(start=1, stop=len(x), num=w)).round(0).astype(int)) - 1
-    pieces = np.empty(shape=len(indices) - 1)
+    indices = ((np.linspace(start=0, stop=len(x) - 1, num=w + 1)).round(0).astype(int))
+    aggr_period = np.zeros(shape=w)
 
-    for i in range(0, (len(indices) - 1)):
-        if indices[i] == 0:
-            pieces[i] = x[indices[i]]
-        elif i == len(indices) - 2:
-            pieces[i] = (x[indices[i]] + x[indices[i + 1]]) / 2
-        else:
-            pieces[i] = np.nanmean([x[indices[i]], x[indices[i + 1] - 1]])
+    # Aggregation of the sequence into w values (by using downsampling: mean of all values in one range)
+    if len(x) == w:
+        aggr_period = x
+    else:
+        for i in range(0, w):
+            aggr_period[i] = x[indices[i]:indices[i+1]].mean()
 
-    # Create an alphabet with double and triple letter combinations (a, aa, aaa)
+    # Create an alphabet with double and triple letter combinations (a, aa, aaa) (number of elements = 78)
     letters = list(string.ascii_lowercase)
     alphabet = letters + [x + x for x in letters] + [x + x + x for x in letters]
 
     # Assign the alphabet
-    let = alphabet[0:len(b)]
+    let = alphabet[0:len(b) - 1]
 
     # Add symbols to sequence according to breakpoints
     sym = []
-    for i in range(0, len(pieces)):
-        obs = pieces[i]
-        temp = []
-        for idx, val in enumerate(b):
-            if val <= obs:
-                temp.append(idx)
-        if len(temp) != 0:
-            sym.append(let[max(temp)])
+    for val in aggr_period:
+        sym.append(let[np.argmax(b > val) - 1])
 
-    return [sym, pieces, indices, b]
+    return [sym, aggr_period, indices, b]
 
 
 def create_esax_time_series(ts_subs, w, per):
@@ -133,13 +126,14 @@ def create_esax_time_series(ts_subs, w, per):
     ts_sax_df1.rename(columns={0: "StartP"}, inplace=True)
     ts_sax_df2 = pd.DataFrame(ts_sax)
     ts_sax_df = pd.concat([ts_sax_df1, ts_sax_df2], axis=1)
+    ts_sax_df = ts_sax_df.set_index('StartP')
 
     print("Searching for Motifs")
 
     return ts_sax_df, pieces_all
 
 
-def perform_random_projection(ts_sax_df, num_iterations, mask_size):
+def perform_random_projection(ts_sax_df, num_iterations, mask_size, seed=42):
     """
     This method carries out the random projection by randomly choosing columns of ts_sax_df (pairwise) and a generating
     a collision matrix.
@@ -156,23 +150,31 @@ def perform_random_projection(ts_sax_df, num_iterations, mask_size):
     col_mat = np.zeros((ts_sax_df.shape[0], ts_sax_df.shape[0]))
     col_mat = pd.DataFrame(col_mat).astype(int)
     for i in range(0, num_iterations):
-        random.seed(i + 42)
-        col_pos = sorted(random.sample(list(ts_sax_df.columns.values)[1:], mask_size))
+        random.seed(i + seed)
+        col_pos = sorted(random.sample(list(ts_sax_df.columns.values), mask_size))
         sax_mask = pd.DataFrame(ts_sax_df.iloc[:, col_pos])
+        # elimintate duplicate rows from the two randomly selected columns
         unique_lab = sax_mask.drop_duplicates()
+
 
         mat = []
         for j in range(0, len(unique_lab.index)):
             indices = []
-            for k in range(0, len(sax_mask.index) - 1):
+            for k in range(0, len(sax_mask.index)):
                 indices.append(sax_mask.iloc[k, :].equals(unique_lab.iloc[j, :]))
             mat.append(indices)
 
+        # mat is a matrix where collisions are stored as boolean values
+        # therefore, a vector (length = number of sequences) is stored row-wise
+        ## e.g. if the value of the vector is 'True' at position 10 --> the 11th sequence
+        # is equal to another sequence at the indexes k and j (we have a collision)
         mat = pd.DataFrame(mat)
 
         if len(mat) != 0:
             for k in range(0, len(mat) - 1):
                 true_idx = np.where(mat.iloc[k, ])
+                # the length must be greater than 1 because there is always one collision
+                # (unique_lab is a subset of sax_mask)
                 if len(true_idx[0]) > 1:
                     com = [n for n in combinations(true_idx[0], 2)]
                     for m in com:
@@ -225,12 +227,11 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
     if motif_pair.shape == (0, 0):
         print("No motif candidates")
         return []
-    counter = 0
 
     indices = []
     for x, y in zip(motif_pair.iloc[:, 0], motif_pair.iloc[:, 1]):
 
-        pair = np.array([ts_sax_df.iloc[x, 0], ts_sax_df.iloc[y, 0]])
+        pair = np.array([ts_sax_df.index[x], ts_sax_df.index[y]])
         cand_1 = np.array(ts_subs[x])
         cand_2 = np.array(ts_subs[y])
 
@@ -242,18 +243,20 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
         ind_final = None
 
         if len(ind_cand) > 1:
-            ind_temp = np.delete(ind_cand, np.where(ind_cand == motif_pair.iloc[counter, 1])[0])
-            counter += 1
+            # Delete all the indexes from ind_cand, which are equal to y
+            ind_temp = np.delete(ind_cand, np.where(ind_cand == y)[0])
             if len(ind_temp) == 1:
-                ind_final = np.array([ts_sax_df.iloc[ind_temp[0], 0]])
+                ind_final = np.array([ts_sax_df.index[ind_temp[0]]])
             elif len(ind_temp) > 1:
                 cand_sel = []
                 dist_res = []
                 for j in ind_temp:
+                    # check which of the preliminary candidates has the shortest distance to x
                     dist_res.append(np.linalg.norm(cand_1 - ts_subs[j]))
                     cand_sel.append(ts_subs[j])
-                ind_final = ts_sax_df.iloc[
-                    ind_temp[[i for i, v in enumerate(dist_res) if v <= max_dist_ratio * dist_raw]], 0].to_numpy()
+                # final starting indexes of similar subsequences to x are derived in this step
+                ind_final = ts_sax_df.index[
+                    ind_temp[[i for i, v in enumerate(dist_res) if v <= max_dist_ratio * dist_raw]]].to_numpy()
         else:
             pass
 
@@ -347,10 +350,17 @@ def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mask_size, md
 
     motifs_raw = []
     motifs_sax = []
+    ts_raw_df = pd.DataFrame(ts_subs, index=ts_sax_df.index, dtype=float)
+
     for val in indexes:
-        motif_raw_indices = np.where(np.isin(ts_sax_df.iloc[:, 0].to_numpy(), list(val)))[0]
-        motifs_raw.append([ts_subs[v] for v in motif_raw_indices])
-        motifs_sax.append(ts_sax_df.iloc[motif_raw_indices, :])
+        motifs_raw.append(ts_raw_df.loc[val])
+        motifs_sax.append(ts_sax_df.loc[val])
+
+    motifs_raw.sort(key=lambda x: x.shape[0], reverse=True)
+    motifs_sax.sort(key=lambda x: x.shape[0], reverse=True)
+
+    # update list of index tuples after sorting
+    indexes = [val.index for val in motifs_raw]
 
     found_motifs = {'ts_subs': ts_subs, 'ts_sax_df': ts_sax_df, 'motifs_raw': motifs_raw,
                     'motifs_sax': motifs_sax, 'col_mat': col_mat, 'indexes': indexes,
