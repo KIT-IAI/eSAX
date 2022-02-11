@@ -24,12 +24,12 @@ def load_data():
     :rtype: pandas.Series
     """
     # Example: UCI building load dataset
-    path = os.path.abspath(os.path.join("../data/", "LD2011_2014_1.txt"))
+    path = os.path.abspath(os.path.join("../data/", "LD2012.txt"))
     df = pd.read_csv(
         path, index_col=0, parse_dates=True,
         delimiter=";", decimal=",", header=0
     )
-    data = df.iloc[:, 198]
+    data = df.MT_019
 
     return data
 
@@ -52,17 +52,16 @@ def main():
 
     # Get subsequences
     ts_subs, startpoints, indexes_subs = subs.get_subsequences(data, resolution)
-    plots.plot_time_series(data, '../run')
-    plots.plot_subsequences(ts_subs, '../run')
 
     # Get motifs
     if ts_subs:
-        found_motifs = mot.get_motifs(data, ts_subs, breaks=10, word_length=0, num_iterations=0,
+        found_motifs = mot.get_motifs(data, ts_subs, breaks=5, word_length=10, num_iterations=0,
                                       mask_size=2, mdr=2.5, cr1=5, cr2=1.5)
         if found_motifs:
             plots.plot_ecdf(found_motifs['ecdf'], '../run')
             plots.plot_motifs(data.index, found_motifs['motifs_raw'], found_motifs['indexes'], '../run')
             plots.plot_repr_motif(found_motifs['motifs_raw'], '../run')
+
 
 if __name__ == "__main__":
     main()
