@@ -125,9 +125,9 @@ def plot_motifs(data_index, motifs_raw, indexes, filepath):
             dat = (np.empty(shape=(0, 2)))
             dat_lengths = []
 
-            for i in motifs_raw[m]:
-                seq = np.linspace(start=1, stop=len(i), num=len(i), dtype="int64")
-                zipped = np.array(list(zip(seq, i)))
+            for i in motifs_raw[m].index:
+                seq = np.linspace(start=1, stop=len(motifs_raw[m].loc[i]), num=len(motifs_raw[m].loc[i]), dtype="int64")
+                zipped = np.array(list(zip(seq, motifs_raw[m].loc[i])))
                 dat_lengths.append(zipped)
                 dat = np.concatenate((dat, zipped), axis=0)
 
