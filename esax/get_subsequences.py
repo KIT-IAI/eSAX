@@ -101,9 +101,9 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
                 if data.index is not None:
                     indexes_subs.append(data.index[(i * window):((i + 1) * window)].to_numpy())
             else:
-                dmin.append(data[(i * window):len(data)-1].to_numpy())
-                if data.index is not None:
-                    indexes_subs.append(data.index[(i * window):len(data)-1].to_numpy())
+                #the algorithm cannot handle different lengths of the subsequences
+                pass
+
         # Save the start points (window length distance)
         for i in range(0, len(dmin)):
             localmin.append(i * window)
