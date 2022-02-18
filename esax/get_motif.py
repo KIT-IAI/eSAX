@@ -245,7 +245,7 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
         if len(ind_cand) > 1:
             # Delete all the indexes from ind_cand, which are equal to y
             ind_temp = np.delete(ind_cand, np.where(ind_cand == y)[0])
-            if len(ind_temp) == 1:
+            if (len(ind_temp) == 1) & (np.linalg.norm(cand_1 - ts_subs[ind_temp[0]]) <= max_dist_ratio * dist_raw):
                 ind_final = np.array([ts_sax_df.index[ind_temp[0]]])
             elif len(ind_temp) > 1:
                 cand_sel = []
