@@ -133,7 +133,7 @@ def create_esax_time_series(ts_subs, w, per):
     return ts_sax_df, pieces_all
 
 
-def perform_random_projection(ts_sax_df, num_iterations, mask_size, seed=42):
+def perform_random_projection(ts_sax_df, num_iterations, mask_size, seed):
     """
     This method carries out the random projection by randomly choosing columns of ts_sax_df (pairwise) and a generating
     a collision matrix.
@@ -142,6 +142,10 @@ def perform_random_projection(ts_sax_df, num_iterations, mask_size, seed=42):
     :type: pandas.Dataframe
     :param num_iterations: number of iterations for the random projection (the higher that number is, the
     approximate result gets closer to the "true" result
+    :type: int
+    :param mask_size: size of the sample of columns from the collision matrix
+    :type: int
+    :param seed: the seed for the random projection
     :type: int
     :return: a collision matrix for identifying motif candidates
     :rtype: pandas.DataFrame
@@ -272,7 +276,7 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
     return indices
 
 
-def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mask_size, mdr, cr1, cr2):
+def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mdr, cr1, cr2, mask_size=2, seed=42):
     """
     This method combines all previous steps to extract the motifs.
 
@@ -287,14 +291,16 @@ def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mask_size, md
     :param num_iterations: number of iterations of the random projection algorithm (note: the motif candidate search
     depends on it together with count_ratio_1
     :type num_iterations: int
-    :param mask_size: mask size for random projection
-    :type mask_size: int
     :param mdr: final distance allowed between occurrences in one motif
     :type mdr: float
     :param cr1: controls when entries in the collision matrix become candidate motifs
     :type cr1: float
     :param cr2: controls whether a candidate motif becomes a motif
     :type cr2: float
+    :param mask_size: mask size for random projection
+    :type mask_size: int
+    :param seed: the seed for the random projection
+    :type: int
     :return: dict with subsequences, SAX dataframe, motifs (symbolic, non-symbolic), collision matrix, indices where the
     motifs start, and non-symbolic subsequences
     :rtype: {list of numpy.ndarrays, pandas.DataFrame, list of np.ndarrays, list of pandas.DataFrames, pandas.DataFrame,
@@ -343,7 +349,7 @@ def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mask_size, md
     ts_sax_df, pieces_all = create_esax_time_series(ts_subs, word_length, per)
 
     # Perform the random projection
-    col_mat = perform_random_projection(ts_sax_df, num_iterations, mask_size)
+    col_mat = perform_random_projection(ts_sax_df, num_iterations, mask_size, seed)
 
     # Extract motif candidates
     indexes = extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, cr1, cr2, mdr)
