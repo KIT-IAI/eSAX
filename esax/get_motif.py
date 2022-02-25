@@ -174,7 +174,7 @@ def perform_random_projection(ts_sax_df, num_iterations, mask_size, seed):
         mat = pd.DataFrame(mat)
 
         if len(mat) != 0:
-            for k in range(0, len(mat) - 1):
+            for k in range(0, len(mat)):
                 true_idx = np.where(mat.iloc[k, ])
                 # the length must be greater than 1 because there is always one collision
                 # (unique_lab is a subset of sax_mask)
