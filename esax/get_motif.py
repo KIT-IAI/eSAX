@@ -64,8 +64,8 @@ def create_esax(x, b, w):
     if len(x) == w:
         aggr_period = x
     else:
-        for i in range(0, w):
-            aggr_period[i] = x[indices[i]:indices[i+1]].mean()
+        splits = np.array_split(x, w)
+        aggr_period = [j.mean() for j in splits]
 
     # Create an alphabet with double and triple letter combinations (a, aa, aaa) (number of elements = 78)
     letters = list(string.ascii_lowercase)
