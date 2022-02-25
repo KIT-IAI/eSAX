@@ -23,7 +23,7 @@ def plot_ecdf(ecdf, filepath):
     # Latex code for axis declarations
     plt.ylabel('$\^{F}_n(x)$')
     plt.title("Empirical Cumulative Distribution Function")
-    plt.savefig(os.path.join(filepath, "ecdf_Power.pdf"))
+    plt.savefig(os.path.join(filepath, "ecdf_Power.png"))
     plt.close()
 
 
