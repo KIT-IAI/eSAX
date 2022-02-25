@@ -155,14 +155,14 @@ def plot_motifs(data_index, motifs_raw, indexes, filepath):
 
     else:
         for m in range(0, len(motifs_raw)):
-            startpoints = indexes[m]
+            startpoints = data_index[list(indexes[m])]
             identifier = startpoints
 
             dat = (np.empty(shape=(0, 2)))
             dat_lengths = []
-            for i in motifs_raw[m]:
-                seq = np.linspace(start=1, stop=len(i), num=len(i), dtype="int64")
-                zipped = np.array(list(zip(seq, i)))
+            for i in motifs_raw[m].index:
+                seq = np.linspace(start=1, stop=len(motifs_raw[m].loc[i]), num=len(motifs_raw[m].loc[i]), dtype="int64")
+                zipped = np.array(list(zip(seq, motifs_raw[m].loc[i])))
                 dat_lengths.append(zipped)
                 dat = np.concatenate((dat, zipped), axis=0)
 
@@ -177,7 +177,7 @@ def plot_motifs(data_index, motifs_raw, indexes, filepath):
             # add the name of the sequence as third column
             # by repeating the name according to the length of the sequence
             dat = pd.DataFrame(dat, columns=["Timesteps", "Load"])
-            dat["Sequence"] = np.repeat(list_names, lns, axis=0)
+            dat["Sequence"] = np.repeat(list_names, lns)
 
             # NOTE This is a plot from the package Plotnine. You can use the same code as in R.
             p = ggplot(dat,
