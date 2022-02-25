@@ -58,7 +58,6 @@ def create_esax(x, b, w):
     """
     # Perform the piecewise aggregation
     indices = ((np.linspace(start=0, stop=len(x) - 1, num=w + 1)).round(0).astype(int))
-    aggr_period = np.zeros(shape=w)
 
     # Aggregation of the sequence into w values (by using downsampling: mean of all values in one range)
     if len(x) == w:
