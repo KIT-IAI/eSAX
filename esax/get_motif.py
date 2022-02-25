@@ -21,7 +21,7 @@ def get_ecdf(data):
     :rtype: (x,y) -> x and y numpy.ndarrays
     """
     # Drop all values = 0
-    data = data[np.array(data, dtype=np.int64) != 0]
+    #data = data[np.array(data, dtype=np.int64) != 0]
     ecdf = calculate_ecdf(data)
     return ecdf
 
@@ -65,7 +65,7 @@ def create_esax(x, b, w):
         aggr_period = x
     else:
         splits = np.array_split(x, w)
-        aggr_period = [j.mean() for j in splits]
+        aggr_period = np.array([j.mean() for j in splits])
 
     # Create an alphabet with double and triple letter combinations (a, aa, aaa) (number of elements = 78)
     letters = list(string.ascii_lowercase)
@@ -77,7 +77,7 @@ def create_esax(x, b, w):
     # Add symbols to sequence according to breakpoints
     sym = []
     for val in aggr_period:
-        sym.append(let[np.argmax(b > val) - 1])
+        sym.append(let[np.argmax(b >= val) - 1])
 
     return [sym, aggr_period, indices, b]
 
