@@ -96,7 +96,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
         # Store the subsequences of size window length for motif discovery in dmin
 
         for i in range(0, round(len(data) / window)):
-            if ((i + 1) * window) < len(data):
+            if ((i + 1) * window) - 1 <= len(data):
                 dmin.append(data[(i * window):((i + 1) * window)].to_numpy())
                 if data.index is not None:
                     indexes_subs.append(data.index[(i * window):((i + 1) * window)].to_numpy())
