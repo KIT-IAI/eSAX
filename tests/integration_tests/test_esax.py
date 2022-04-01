@@ -30,12 +30,11 @@ class TestESAX(unittest.TestCase):
             found_motifs = mot.get_motifs(data, ts_subs, breaks=5, word_length=10, num_iterations=0,
                                           mask_size=2, mdr=30, cr1=20, cr2=20)
             if found_motifs:
-                plots.plot_ecdf(found_motifs['ecdf'], '../../run')
-                plots.plot_motifs(data.index, found_motifs['motifs_raw'], found_motifs['indexes'], '../../run')
-                plots.plot_repr_motif(found_motifs['motifs_raw'], '../../run')
+                plots.plot_ecdf(found_motifs['ecdf'], 'run/')
+                plots.plot_motifs(data.index, found_motifs['motifs_raw'], found_motifs['indexes'], 'run/')
+                plots.plot_repr_motif(found_motifs['motifs_raw'], 'run/')
                 self.assertEqual(found_motifs['motifs_raw'][0].shape[0], 200)
 
 
 if __name__ == '__main__':
-    print(os.getcwd())
     unittest.main()
