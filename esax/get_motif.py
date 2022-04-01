@@ -20,8 +20,6 @@ def get_ecdf(data):
     :return: ECDF function of the time series
     :rtype: (x,y) -> x and y numpy.ndarrays
     """
-    # Drop all values = 0
-    #data = data[np.array(data, dtype=np.int64) != 0]
     ecdf = calculate_ecdf(data)
     return ecdf
 
