@@ -1,3 +1,4 @@
+import os
 import random
 import string
 import unittest
@@ -14,6 +15,7 @@ class TestESAX(unittest.TestCase):
     def test_eSAX(self):
         two_days = np.repeat([0,1], 24)
         data = np.array([])
+        # generates data consisting of 200 days (alternating between 0 and 1)
         for i in range(0,100):
             data = np.concatenate((data, two_days))
 
@@ -31,7 +33,9 @@ class TestESAX(unittest.TestCase):
                 plots.plot_ecdf(found_motifs['ecdf'], '../../run')
                 plots.plot_motifs(data.index, found_motifs['motifs_raw'], found_motifs['indexes'], '../../run')
                 plots.plot_repr_motif(found_motifs['motifs_raw'], '../../run')
+                self.assertEqual(found_motifs['motifs_raw'][0].shape[0], 200)
 
 
 if __name__ == '__main__':
+    print(os.getcwd())
     unittest.main()
