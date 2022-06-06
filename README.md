@@ -66,6 +66,12 @@ Since this Python implementation of eSAX is based on the original R implemention
 * An upgrade in terms of runtime was implemented in the python version. The algorithm for merging the indexes of candidate motifs works more efficiently in the Python version and thus enables processing of large time series.
 * Additionally, the Python implementation contains test cases which test the main functionalities of the algorithm.
 
+
+<h2>Funding</h2>
+
+This project is funded by the Helmholtz Association’s Initiative and Networking Fund through Helmholtz AI and the Helmholtz Association under the Program "Energy System Design".
+
+
 <h2>License</h2>
 
 This code is licensed under the [MIT License](LICENSE).
