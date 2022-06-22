@@ -10,16 +10,11 @@ import random
 from statistics import median
 import string
 import logging
-import configparser
 
-cfg = configparser.ConfigParser()
-cfg.read('../esax_config.cfg')
 log_fmt = "%(asctime)s - %(name)s - %(message)s"
 logging.basicConfig(level=logging.WARNING, format=log_fmt)
 logger = logging.getLogger(__name__)
 
-if cfg.get('DEFAULT', 'enable_debugging'):
-    logger.setLevel(logging.DEBUG)
 
 def get_ecdf(data):
     """

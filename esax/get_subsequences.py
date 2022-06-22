@@ -5,16 +5,11 @@ Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 
 import numpy as np
 import logging
-import configparser
 
-cfg = configparser.ConfigParser()
-cfg.read('../esax_config.cfg')
 log_fmt = "%(asctime)s - %(name)s - %(message)s"
 logging.basicConfig(level=logging.WARNING, format=log_fmt)
 logger = logging.getLogger(__name__)
 
-if cfg.get('DEFAULT', 'enable_debugging'):
-    logger.setLevel(logging.DEBUG)
 
 def determine_subsequences(data, event, window, custom_event=0.00, window_size=100):
     """
