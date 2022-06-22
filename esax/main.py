@@ -13,7 +13,6 @@ import esax.get_motif as mot
 import esax.plots as plots
 import esax.get_subsequences as subs
 
-
 def load_data():
     """
     This method loads data from the data folder.

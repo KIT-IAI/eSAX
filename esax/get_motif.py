@@ -9,7 +9,17 @@ import pandas as pd
 import random
 from statistics import median
 import string
+import logging
+import configparser
 
+cfg = configparser.ConfigParser()
+cfg.read('../esax_config.cfg')
+log_fmt = "%(asctime)s - %(name)s - %(message)s"
+logging.basicConfig(level=logging.WARNING, format=log_fmt)
+logger = logging.getLogger(__name__)
+
+if cfg.get('DEFAULT', 'enable_debugging'):
+    logger.setLevel(logging.DEBUG)
 
 def get_ecdf(data):
     """
@@ -94,7 +104,7 @@ def create_esax_time_series(ts_subs, w, per):
     :rtype: pandas.DataFrame, list of numpy.ndarrays
     """
     # Create eSAX time series
-    print("Creating the eSAX pieces")
+    logger.debug("Creating the eSAX pieces")
     # Create list to access the SAX pieces later
     pieces_all = []
 
@@ -125,7 +135,7 @@ def create_esax_time_series(ts_subs, w, per):
     ts_sax_df = pd.concat([ts_sax_df1, ts_sax_df2], axis=1)
     ts_sax_df = ts_sax_df.set_index('StartP')
 
-    print("Searching for Motifs")
+    logger.debug("Searching for Motifs")
 
     return ts_sax_df, pieces_all
 
@@ -226,7 +236,7 @@ def extract_motif_pair(ts_sax_df, col_mat, ts_subs, num_iterations, count_ratio_
 
     motif_pair = pd.DataFrame(motif_pair)
     if motif_pair.shape == (0, 0):
-        print("No motif candidates")
+        logger.debug("No motif candidates")
         return []
 
     indices = []
@@ -369,7 +379,7 @@ def get_motifs(data, ts_subs, breaks, word_length, num_iterations, mdr, cr1, cr2
                     'motifs_sax': motifs_sax, 'col_mat': col_mat, 'indexes': indexes,
                     'pieces_all': pieces_all, 'ecdf': ecdf}
 
-    print("Done")
+    logger.debug("Done")
 
     return found_motifs
 
