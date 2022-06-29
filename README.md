@@ -9,6 +9,8 @@ Thereby, this implementation is based on the corresponding paper:
 
 This implementation assumes the input time series to be in the data folder. The input time series cannot contain NaN-values. Furthermore, the input data must have a timestamp in the index column (to be able to determine the window size by comparing the first two timestamps) and a variable of interest such as power in the second column. If no timestamp column exist, sequences automatically have a length of 24 measurements.
 
+An example of how to apply eSAX to a time series can be found in <code>main.py</code>.
+
 <h2>Files and parameters</h2>
 
 <code>get_subsequences.py:</code> Extracts the subsequences from the original time series. The series is seperated into the subsequences depening on the method selected by the user.
@@ -54,7 +56,7 @@ As described by Nicole Ludwig, "there are several parameters in this file which 
 <code>main.py:</code> Loads the data and calls the other methods step by step.
 
 <h3>En-/Disable debugging output</h3>
-If debugging output should be displayed during execution of eSAX, change the logging level of the logger to logging.INFO.
+If debugging output should be displayed during execution of eSAX, change the logging level of the logger to logging.INFO: <code>logging.basicConfig(level=logging.INFO)</code>
 
 <h2>Comparison to the R implementation</h2>
 
