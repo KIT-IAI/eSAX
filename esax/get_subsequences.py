@@ -6,8 +6,6 @@ Copyright (c) 2021 KIT-IAI Jan Ludwig, Oliver Neumann, Marian Turowski
 import numpy as np
 import logging
 
-log_fmt = "%(asctime)s - %(name)s - %(message)s"
-logging.basicConfig(level=logging.WARNING, format=log_fmt)
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +35,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
 
     # The subsequences in dmin always start with the minimum
     if event == "minimum":
-        logger.debug("Searching for minima ...\n")
+        logger.info("Searching for minima ...\n")
         # Initialise __vector__ for minima
 
         # Loop that finds all minima occurring in each run
@@ -50,7 +48,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
             vectorPart = data[j:k]
             localmin.append(np.where(vectorPart == min(vectorPart))[0][0] + ((i - 1) * w) + 1)
 
-        logger.debug("Preparing list ...\n")
+        logger.info("Preparing list ...\n")
 
         dmin.append(data[0:localmin[0]].to_numpy())
 
@@ -59,7 +57,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
         dmin.append(data[localmin[len(localmin) - 1]:len(data)].to_numpy())
 
     elif event == "zero":
-        logger.debug("Searching for zeros ...\n")
+        logger.info("Searching for zeros ...\n")
         zeros = np.where(data == 0)[0]
 
         for i in range(0, len(zeros)):
@@ -71,13 +69,13 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
                 else:
                     localmin.append(len(data) - 1)
 
-        logger.debug("Preparing list ...\n")
+        logger.info("Preparing list ...\n")
 
         for i in range(0, len(localmin), 2):
             dmin.append(data[localmin[i]:localmin[i + 1]].to_numpy())
 
     elif event == "custom":
-        logger.debug("Searching for custom event ...\n")
+        logger.info("Searching for custom event ...\n")
 
         start = np.where(data == custom_event)[0]
 
@@ -90,7 +88,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
                 else:
                     localmin.append(len(data) - 1)
 
-        logger.debug("Preparing list ...\n")
+        logger.info("Preparing list ...\n")
 
         for i in range(0, len(localmin), 2):
             dmin.append(data[localmin[i]:localmin[i + 1]].to_numpy())
@@ -113,7 +111,7 @@ def determine_subsequences(data, event, window, custom_event=0.00, window_size=1
         for i in range(0, len(dmin)):
             localmin.append(i * window)
 
-        logger.debug("Preparing list ...\n")
+        logger.info("Preparing list ...\n")
 
     return dmin, localmin, indexes_subs
 
@@ -139,6 +137,6 @@ def get_subsequences(data, resolution):
     # TODO: only 'none' is working at the moment
     sequences, startpoints, indexes_subs = determine_subsequences(data=data, event="none", window=window)
 
-    logger.debug("Done")
+    logger.info("Done")
 
     return sequences, startpoints, indexes_subs

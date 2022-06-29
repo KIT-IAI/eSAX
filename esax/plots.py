@@ -11,8 +11,6 @@ import os
 from plotnine import *
 import logging
 
-log_fmt = "%(asctime)s - %(name)s - %(message)s"
-logging.basicConfig(level=logging.WARNING, format=log_fmt)
 logger = logging.getLogger(__name__)
 
 
@@ -88,7 +86,7 @@ def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
     try:
         data = pd.concat(dat)
     except ValueError:
-        logger.debug("No minima found!")
+        logger.info("No minima found!")
         return False
 
     data["Sequence"] = np.repeat(list_names, lns)
@@ -190,7 +188,7 @@ def plot_motifs(data_index, motifs_raw, indexes, filepath):
                 "Sequence") + theme(legend_position="none")
             p.save(os.path.join(filepath, "eMotif_{}.png".format(m)), width=14, height=10)
 
-    logger.debug("All motifs plotted ...")
+    logger.info("All motifs plotted ...")
 
 
 def plot_repr_motif(motifs_raw, filepath):
