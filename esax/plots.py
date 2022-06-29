@@ -9,6 +9,9 @@ import numpy as np
 import pandas as pd
 import os
 from plotnine import *
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def plot_ecdf(ecdf, filepath):
@@ -83,7 +86,7 @@ def plot_subsequences(sequences, filepath, xlabel="Time", ylabel="Power"):
     try:
         data = pd.concat(dat)
     except ValueError:
-        print("No minima found!")
+        logger.info("No minima found!")
         return False
 
     data["Sequence"] = np.repeat(list_names, lns)
@@ -185,7 +188,7 @@ def plot_motifs(data_index, motifs_raw, indexes, filepath):
                 "Sequence") + theme(legend_position="none")
             p.save(os.path.join(filepath, "eMotif_{}.png".format(m)), width=14, height=10)
 
-    print("All motifs plotted ...")
+    logger.info("All motifs plotted ...")
 
 
 def plot_repr_motif(motifs_raw, filepath):
