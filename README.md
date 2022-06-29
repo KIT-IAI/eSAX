@@ -53,6 +53,8 @@ As described by Nicole Ludwig, "there are several parameters in this file which 
 
 <code>main.py:</code> Loads the data and calls the other methods step by step.
 
+<h3>En-/Disable debugging output</h3>
+If debugging output should be displayed during execution of eSAX, change the logging level of the logger to logging.INFO.
 
 <h2>Comparison to the R implementation</h2>
 
