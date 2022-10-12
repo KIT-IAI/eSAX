@@ -13,37 +13,85 @@ import esax.get_motif as mot
 import esax.plots as plots
 import esax.get_subsequences as subs
 import logging
+import argparse
 
 logger = logging.getLogger(__name__)
 
-def load_data():
+
+def parse_hparams(args=None):
     """
-    This method loads data from the data folder.
-    NOTE: The UCI ElectricityLoadDiagrams20112014 Data Set serves as an examples for data loading here (source:
-    https://archive.ics.uci.edu/ml/datasets/ElectricityLoadDiagrams20112014).
+    Parses command line statement
+
+    :return: the parsed arguments
+    """
+    # prepare argument parser
+    parser = argparse.ArgumentParser(
+        description="Anomaly detection benchmark pipeline."
+    )
+    # csv path file
+    parser.add_argument("csv_path", type=str, help="Path to the data CSV file.")
+    # time_index
+    parser.add_argument("time", type=str, help="Name of the time index.")
+    # data_index
+    parser.add_argument("target", type=str, help="Name of the target index.")
+    # delimiter
+    parser.add_argument(
+        "--csv_separator",
+        type=str,
+        default=";",
+        help="CSV file column separator (default ;).",
+    )
+    # decimal
+    parser.add_argument(
+        "--csv_decimal",
+        type=str,
+        default=",",
+        help="CSV file decimal delimiter (default ,).",
+    )
+    # enable plots
+    parser.add_argument(
+        "--plots",
+        action="store_true",
+        help="Enable plots to be generated.",
+    )
+
+    # convert argument strings
+    parsed_hparams = parser.parse_args(args=args)
+
+    return parsed_hparams
+
+
+def load_data(csv_path: str, time: str, target: str, sep: str, dec: str):
+    """
+    This method loads data.
 
     :return: the univariate time series of interest
     :rtype: pandas.Series
     """
-    # Example: UCI building load dataset
-    path = os.path.abspath(os.path.join("./data/", "LD2012.txt"))
     df = pd.read_csv(
-        path, index_col=0, parse_dates=True,
-        delimiter=";", decimal=",", header=0
+        csv_path, index_col=time, parse_dates=True, delimiter=sep, decimal=dec, header=0
     )
-    data = df.MT_019
+    data = df[target]
 
     return data
 
 
-def main():
+def main(hparams: argparse.Namespace):
 
     # Load data
-    data = load_data()
+    data = load_data(
+        csv_path=hparams.csv_path,
+        time=hparams.time,
+        target=hparams.target,
+        sep=hparams.csv_separator,
+        dec=hparams.csv_decimal,
+    )
 
     # Calculate the measurement intervals
     try:
-        dates = pd.arrays.DatetimeArray(data.index, dtype=np.dtype("<M8[ns]"), freq=None, copy=False)
+        dates = pd.arrays.DatetimeArray(
+            data.index, dtype=np.dtype("<M8[ns]"), freq=None, copy=False
+        )
         resolution = (dates[1] - dates[0]).seconds / 3600
     except:
         logging.warning("Unexpected error:", sys.exc_info()[0])
@@ -58,13 +106,30 @@ def main():
 
     # Get motifs
     if ts_subs:
-        found_motifs = mot.get_motifs(data, ts_subs, breaks=5, word_length=10, num_iterations=0,
-                                      mask_size=2, mdr=2.5, cr1=5, cr2=1.5)
-        if found_motifs:
-            plots.plot_ecdf(found_motifs['ecdf'], './run')
-            plots.plot_motifs(data.index, found_motifs['motifs_raw'], found_motifs['indexes'], './run')
-            plots.plot_repr_motif(found_motifs['motifs_raw'], './run')
+        found_motifs = mot.get_motifs(
+            data,
+            ts_subs,
+            breaks=5,
+            word_length=10,
+            num_iterations=0,
+            mask_size=2,
+            mdr=2.5,
+            cr1=5,
+            cr2=1.5,
+        )
+        if found_motifs and hparams.plots:
+            if not os.path.exists("./run"):
+                os.makedirs("./run")
+
+            plots.plot_ecdf(found_motifs["ecdf"], "./run")
+            plots.plot_motifs(
+                data.index, found_motifs["motifs_raw"], found_motifs["indexes"], "./run"
+            )
+            plots.plot_repr_motif(found_motifs["motifs_raw"], "./run")
 
 
 if __name__ == "__main__":
-    main()
+    # parse command line statement
+    hparams = parse_hparams()
+
+    main(hparams)
